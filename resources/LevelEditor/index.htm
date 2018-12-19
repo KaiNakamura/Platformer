@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Level Editor </title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/lib/p5/p5.min.js"></script>
+    <script src="/lib/p5/addons/p5.dom.min.js"></script>
+    <script src="constants.js"></script>
+    <script src="point.js"></script>
+    <script src="tile.js"></script>
+    <script src="tilemap.js"></script>
+    <script src="/tool/tool.js"></script>
+    <script src="/tool/brush.js"></script>
+    <script src="/tool/bucket.js"></script>
+    <script src="/tool/dropper.js"></script>
+    <script src="/tool/trash.js"></script>
+    <script src="sketch.js"></script>
+  </head>
+  <body>
+    <div id="panel">
+      <input type="radio" name="tool" class="tool" value="brush" checked="checked"> Brush </input>
+      <br>
+      <input type="radio" name="tool" class="tool" value="bucket"> Bucket </input>
+      <br>
+      <input type="radio" name="tool" class="tool" value="dropper"> Dropper </input>
+      <br>
+      <br>
+      <br>
+      <button type="button" onclick="erase()">Erase</button>
+    </div>
+    <div id="footer"></div>
+  </body>
+</html>
