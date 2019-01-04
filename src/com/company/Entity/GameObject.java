@@ -1,6 +1,8 @@
 package com.company.Entity;
 
 import com.company.Constants;
+import com.company.GamePanel;
+import com.company.GameState.GameStateManager;
 import com.company.TileMap.TileMap;
 
 import javax.imageio.ImageIO;
@@ -19,6 +21,9 @@ public abstract class GameObject
     protected TileMap tileMap;
     protected double xMap;
     protected double yMap;
+
+    // Game Panel
+    protected GamePanel gamePanel;
 
     // Position and Velocity
     protected double x, y, dx, dy;
@@ -48,13 +53,14 @@ public abstract class GameObject
     protected boolean left, right, up, down, jumping, jumpHeld, falling;
 
     // Movement attributes
-    protected double moveSpeed, maxSpeed, stopSpeed;
-    protected double fallSpeed, jumpFallSpeed, maxFallSpeed;
+    protected double moveSpeed, maxSpeed, stopSpeed, groundStopSpeed;
+    protected double fallSpeed, jumpFallSpeed, maxFallSpeed, wallFallSpeed, maxWallFallSpeed;
     protected double jumpStart, jumpStop;
 
-    public GameObject(TileMap tileMap)
+    public GameObject(TileMap tileMap, GamePanel gamePanel)
     {
         this.tileMap = tileMap;
+        this.gamePanel = gamePanel;
     }
 
     public abstract void init();
@@ -158,8 +164,8 @@ public abstract class GameObject
             if (!bottomLeft && !bottomRight) falling = true;
         }
 
-        if (right) facingRight = true;
-        else if (left) facingRight = false;
+        if (right && !left) facingRight = true;
+        else if (left && !right) facingRight = false;
     }
 
     public boolean isOnScreen()

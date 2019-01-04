@@ -1,6 +1,7 @@
 package com.company.GameState;
 
 import com.company.Constants;
+import com.company.Entity.Door;
 import com.company.Entity.Player;
 import com.company.TileMap.Background;
 import com.company.TileMap.TileMap;
@@ -15,8 +16,14 @@ public class LevelState extends GameState
     private final int TILE_SIZE = Constants.TILE_SIZE;
 
     private TileMap[] tileMaps;
+
+    // Doors
+    private Door[] doors;
+    private boolean doorEntered;
+    private Constants.TileMap newMap;
+
     private Background bg;
-    private int currentMap;
+    private Constants.TileMap currentMap;
     private Player player;
 
     public LevelState(GameStateManager gsm)
@@ -28,35 +35,59 @@ public class LevelState extends GameState
     @Override
     public void init()
     {
-        currentMap = 0;
+        currentMap = Constants.TileMap.START_POINT;
 
         tileMaps = new TileMap[]{
-                new TileMap(Constants.File.TILESET, "/Maps/start.map", "/Backgrounds/bg.png"),
-                new TileMap(Constants.File.TILESET, "/Maps/level1.map", "/Backgrounds/bg.png"),
-                new TileMap(Constants.File.TILESET, "/Maps/level2.map", "/Backgrounds/bg.png"),
-
+                new TileMap(gamePanel, Constants.TileMap.START_POINT),
+                new TileMap(gamePanel, Constants.TileMap.LEVEL_1),
+                new TileMap(gamePanel, Constants.TileMap.LEVEL_2),
         };
 
-        player = new Player(tileMaps[currentMap]);
+        // Set up doors
+        tileMaps[0].getDoors()[0].setDestination(tileMaps[1]);
+        tileMaps[1].getDoors()[0].setDestination(tileMaps[2]);
+
+        player = new Player(getCurrentMap(), gsm.getGamePanel());
         player.init();
     }
 
     @Override
     public void update(double dt)
     {
+        // Check if door entered
+        if (doorEntered && gamePanel.getDelay() == 0)
+        {
+            currentMap = newMap;
+            doorEntered = false;
+            player.resetStance();
+        }
+
+        for (int i = 0; i < getCurrentMap().getDoors().length; i++)
+        {
+            if (getCurrentMap().getDoors()[i].entered(player))
+            {
+                doorEntered = true;
+                gamePanel.setDelay(500);
+                newMap = getCurrentMap().getDoors()[i].getDestination().getTileMap();
+                System.out.println("CHANGING TO: " + newMap);
+            }
+        }
+
         // Set player movement
         player.setLeft(Constants.Key.LEFT.isDown());
         player.setRight(Constants.Key.RIGHT.isDown());
         player.setUp(Constants.Key.UP.isDown());
         player.setDown(Constants.Key.DOWN.isDown());
+        if (Constants.Key.DOWN.isPressed()) player.setInspecting(true);
         player.setJumping(Constants.Key.JUMP.isPressed());
         player.setJumpHeld(Constants.Key.JUMP.isDown());
+        player.setShooting(Constants.Key.SHOOT.isPressed());
 
         // Update player
-        if (!player.getTileMap().equals(tileMaps[currentMap]))
+        if (!player.getTileMap().equals(getCurrentMap()))
         {
-            player.setTileMap(tileMaps[currentMap]);
-            player.setPosition(tileMaps[currentMap].getPlayerX(), tileMaps[currentMap].getPlayerY());
+            player.setTileMap(getCurrentMap());
+            player.setPosition(getCurrentMap().getPlayerX(), getCurrentMap().getPlayerY());
         }
         player.update();
 
@@ -66,7 +97,7 @@ public class LevelState extends GameState
 
         double dx = player.getLookX(), dy = player.getLookY();
 
-        tileMaps[currentMap].setPosition(x - dx, y - dy);
+        getCurrentMap().setPosition(x - dx, y - dy);
 
         // Reset keyPressed and keyReleased
         updateKeys();
@@ -76,10 +107,10 @@ public class LevelState extends GameState
     public void draw(Graphics2D g2)
     {
         // Draw Background
-        tileMaps[currentMap].drawBackground(g2);
+        getCurrentMap().drawBackground(g2);
 
         // Draw TileMap
-        tileMaps[currentMap].drawTiles(g2);
+        getCurrentMap().drawTiles(g2);
 
         // Draw player
         player.draw(g2);
@@ -107,13 +138,6 @@ public class LevelState extends GameState
                 key.setDown(true);
             }
         }
-
-        if (code == KeyEvent.VK_P)
-        {
-            if (currentMap == tileMaps.length-1) setCurrentMap(0);
-            else setCurrentMap(currentMap + 1);
-        }
-
     }
 
     @Override
@@ -131,7 +155,17 @@ public class LevelState extends GameState
         }
     }
 
-    public void setCurrentMap(int currentMap)
+    private TileMap getCurrentMap()
+    {
+        for (int i = 0; i < tileMaps.length; i++)
+        {
+            if (tileMaps[i].getTileMap() == currentMap) return tileMaps[i];
+        }
+
+        throw new IllegalArgumentException("TileMap not found from Constants.TileMap, you did something really wrong if your're seeing this.");
+    }
+
+    public void setCurrentMap(Constants.TileMap currentMap)
     {
         this.currentMap = currentMap;
     }

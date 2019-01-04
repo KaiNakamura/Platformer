@@ -71,7 +71,7 @@ class TileMap
       }
     }
   }
-  
+
   erase()
   {
     for (var i = 0; i < this.numRows; i++)

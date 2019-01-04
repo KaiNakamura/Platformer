@@ -7,8 +7,11 @@ class Bucket extends Tool
 
   click(tileMap, color)
   {
-    this.fillAdjacents(tileMap, mouseX, mouseY, color);
-    tileMap.setTile(mouseX, mouseY, color);
+    if (!Tile.colorEquals(tileMap.getTile(mouseX, mouseY).color, color))
+    {
+      this.fillAdjacents(tileMap, mouseX, mouseY, color);
+      tileMap.setTile(mouseX, mouseY, color);
+    }
   }
 
   fillAdjacents(tileMap, v1, v2, v3)

@@ -21,6 +21,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     private int FPS = Constants.FPS;
     private int MINIMUM_DELAY = Constants.MINIMUM_DELAY;
     private long targetTime = (long) 1000 / (long) FPS;
+    private long delay = 0;
 
     // Image
     private BufferedImage image;
@@ -55,7 +56,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
         running = true;
 
-        gsm = new GameStateManager();
+        gsm = new GameStateManager(this);
     }
 
     @Override
@@ -78,7 +79,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
             elapsed = System.nanoTime() - start;
 
-            wait = targetTime - elapsed / 1000000;
+            wait = targetTime - elapsed / 1000000 + delay;
 
             if (wait < 0) wait = MINIMUM_DELAY;
 
@@ -90,6 +91,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             {
                 e.printStackTrace();
             }
+
+            delay = 0;
         }
     }
 
@@ -126,5 +129,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     public void keyReleased(KeyEvent e)
     {
         gsm.keyReleased(e);
+    }
+
+    public long getDelay()
+    {
+        return delay;
+    }
+
+    public void setDelay(long delay)
+    {
+        this.delay = delay;
+    }
+
+    public void delay(long delay)
+    {
+        this.delay += delay;
     }
 }

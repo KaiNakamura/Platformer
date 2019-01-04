@@ -2,6 +2,7 @@ package com.company.TileMap;
 
 import com.company.Constants;
 import com.company.Entity.Door;
+import com.company.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -13,6 +14,9 @@ import java.util.ArrayList;
 
 public class TileMap
 {
+    // GamePanel
+    private GamePanel gamePanel;
+
     // Follow
     private double FOLLOW = Constants.Camera.FOLLOW;
 
@@ -28,7 +32,7 @@ public class TileMap
     private double playerX, playerY;
 
     // Doors
-    private ArrayList<Door> doors;
+    private Door[] doors;
 
     // Bounds
     private int xMin, yMin, xMax, yMax;
@@ -37,8 +41,7 @@ public class TileMap
     private int[][] map;
     private int numRows, numCols;
     private int width, height;
-    private String tsLocation;
-    private String mapLocation;
+    private Constants.TileMap tileMap;
 
     // Tileset
     private BufferedImage tileset;
@@ -50,22 +53,27 @@ public class TileMap
     private int rowOffset, colOffset;
     private int numRowsToDraw, numColsToDraw;
 
-    public TileMap(String tsLocation, String mapLocation, String bgLocation, double parralaxScale)
+    private TileMap(GamePanel gamePanel, String tsLocation, String mapLocation, String bgLocation, double parralaxScale)
     {
+        this.gamePanel = gamePanel;
         numRowsToDraw = HEIGHT / TILE_SIZE + 2;
         numColsToDraw = WIDTH / TILE_SIZE + 2;
 
-        this.tsLocation = tsLocation;
-        this.mapLocation = mapLocation;
         bg = new Background(bgLocation, parralaxScale);
 
         loadTiles(tsLocation);
         loadMap(mapLocation);
     }
 
-    public TileMap(String tsLocation, String mapLocation, String bgLocation)
+    private TileMap(GamePanel gamePanel, String tsLocation, String mapLocation, String bgLocation)
     {
-        this(tsLocation, mapLocation, bgLocation, 0);
+        this(gamePanel, tsLocation, mapLocation, bgLocation, 0);
+    }
+
+    public TileMap(GamePanel gamePanel, Constants.TileMap tileMap)
+    {
+        this(gamePanel, tileMap.getTileSetLocation(), tileMap.getMapLocation(), tileMap.getBackgroundLocation(), tileMap.getParallaxScale());
+        this.tileMap = tileMap;
     }
 
     public void loadTiles(String s)
@@ -120,6 +128,8 @@ public class TileMap
             yMin = HEIGHT - height;
             yMax = 0;
 
+            ArrayList<Door> doorArrayList = new ArrayList<>();
+
             String delims = "\\s+";
             for (int row = 0; row < numRows; row++)
             {
@@ -139,13 +149,19 @@ public class TileMap
 
                         setPosition(x, y, false);
                     }
-//
-//                    if (map[row][col] == 2)
-//                    {
-//                        doors.add(new Door(this, tiles[0][2]));
-//                    }
+                    else if (map[row][col] == 2)
+                    {
+                        double doorX = (col * TILE_SIZE) + TILE_SIZE/2.0;
+                        double doorY = (row * TILE_SIZE) + TILE_SIZE/2.0;
+
+                        doorArrayList.add(new Door(this, gamePanel, doorX, doorY));
+                    }
                 }
             }
+
+            // Convert door arrayList in to array
+            doors = new Door[doorArrayList.size()];
+            doors = doorArrayList.toArray(doors);
         }
         catch (Exception e)
         {
@@ -244,13 +260,18 @@ public class TileMap
         return playerY;
     }
 
-    public String getMapLocation()
+    public Constants.TileMap getTileMap()
     {
-        return mapLocation;
+        return tileMap;
+    }
+
+    public Door[] getDoors()
+    {
+        return doors;
     }
 
     public boolean equals(TileMap other)
     {
-        return other.getMapLocation().equals(mapLocation);
+        return other.getTileMap() == getTileMap();
     }
 }

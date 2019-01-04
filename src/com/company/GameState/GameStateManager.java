@@ -1,6 +1,7 @@
 package com.company.GameState;
 
 import com.company.Constants;
+import com.company.GamePanel;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -8,11 +9,13 @@ import java.util.ArrayList;
 
 public class GameStateManager
 {
+    private GamePanel gamePanel;
     private ArrayList<GameState> gameStates;
     private Constants.GameStateType currentStateType;
 
-    public GameStateManager()
+    public GameStateManager(GamePanel gamePanel)
     {
+        this.gamePanel = gamePanel;
         gameStates = new ArrayList<>();
 
         currentStateType = Constants.GameStateType.MENU;
@@ -56,5 +59,10 @@ public class GameStateManager
     public void keyReleased(KeyEvent e)
     {
         getStateByType(currentStateType).keyReleased(e);
+    }
+
+    public GamePanel getGamePanel()
+    {
+        return gamePanel;
     }
 }

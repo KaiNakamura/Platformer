@@ -128,8 +128,11 @@ public class Constants
 
     public static class File
     {
-        public static final String PLAYER_SPRITES = "/Sprites/Player/playersprites.png";
+        public static final String NULL_SPRITE = "/Sprites/nullsprite.png";
         public static final String TILESET = "/Tilesets/tileset.png";
+        public static final String BACKGROUND = "/Backgrounds/bg.png";
+        public static final String PLAYER_SPRITES = "/Sprites/Player/playersprites.png";
+        public static final String BULLET_SPRITES = "/Sprites/Gun/bulletsprites.png";
     }
 
     public static class Camera
@@ -142,14 +145,22 @@ public class Constants
 
     public enum AnimationAction
     {
+        NULL(1, 0, File.NULL_SPRITE),
         PLAYER_IDLE(1, 0, File.PLAYER_SPRITES),
         PLAYER_RUNNING(3, 100, 1, File.PLAYER_SPRITES),
-        PLAYER_JUMPING(1, 2, File.PLAYER_SPRITES),
-        PLAYER_LOOK_UP(1, 3, File.PLAYER_SPRITES),
-        PLAYER_LOOK_UP_RUNNING(3, 100, 4, File.PLAYER_SPRITES),
-        PLAYER_LOOK_UP_JUMPING(1, 5, File.PLAYER_SPRITES),
-        PLAYER_LOOK_DOWN(1, 6, File.PLAYER_SPRITES),
-        PLAYER_LOOK_DOWN_JUMPING(1, 7, File.PLAYER_SPRITES);
+        PLAYER_FALLING(1, 2, File.PLAYER_SPRITES),
+        PLAYER_JUMPING(1, 3, File.PLAYER_SPRITES),
+        PLAYER_LOOK_UP(1, 4, File.PLAYER_SPRITES),
+        PLAYER_LOOK_UP_RUNNING(3, 100, 5, File.PLAYER_SPRITES),
+        PLAYER_LOOK_UP_JUMPING(1, 6, File.PLAYER_SPRITES),
+        PLAYER_INSPECT(1, 7, File.PLAYER_SPRITES),
+        PLAYER_LOOK_DOWN_JUMPING(1, 8, File.PLAYER_SPRITES),
+
+        BULLET_MOVING(1, 0, File.BULLET_SPRITES),
+        BULLET_FIRED(5, 25,1, File.BULLET_SPRITES),
+        BULLET_HIT(5, 50,2, File.BULLET_SPRITES),
+        BULLET_DAMAGE(5, 50,3, File.BULLET_SPRITES),
+        BULLET_EXPIRED(5, 25,4, File.BULLET_SPRITES);
 
         private BufferedImage[] frames;
         private long delay;
@@ -230,6 +241,51 @@ public class Constants
         }
     }
 
+    public enum TileMap
+    {
+        START_POINT(File.TILESET, "/Maps/start.map", File.BACKGROUND),
+        LEVEL_1(File.TILESET, "/Maps/level1.map", File.BACKGROUND),
+        LEVEL_2(File.TILESET, "/Maps/level2.map", File.BACKGROUND);
+
+        private String tsLocation;
+        private String mapLocation;
+        private String bgLocation;
+        private double parallaxScale;
+
+        TileMap(String tsLocation, String mapLocation, String bgLocation, double parallaxScale)
+        {
+            this.tsLocation = tsLocation;
+            this.mapLocation = mapLocation;
+            this.bgLocation = bgLocation;
+            this.parallaxScale = parallaxScale;
+        }
+
+        TileMap(String tsLocation, String mapLocation, String bgLocation)
+        {
+            this(tsLocation, mapLocation, bgLocation, 0);
+        }
+
+        public String getTileSetLocation()
+        {
+            return tsLocation;
+        }
+
+        public String getMapLocation()
+        {
+            return mapLocation;
+        }
+
+        public String getBackgroundLocation()
+        {
+            return bgLocation;
+        }
+
+        public double getParallaxScale()
+        {
+            return parallaxScale;
+        }
+    }
+
     public static class Player
     {
         // Collision
@@ -237,13 +293,26 @@ public class Constants
         public static final int COL_HEIGHT = TILE_SIZE;
 
         // Movement
-        public static final double MOVE_SPEED = 0.1;
+        public static final double MOVE_SPEED = 0.08;
         public static final double MAX_SPEED = 1.4;
-        public static final double STOP_SPEED = 0.12;
+        public static final double STOP_SPEED = 0.05;
+        public static final double GROUND_STOP_SPEED = 0.12;
         public static final double FALL_SPEED = 0.15;
         public static final double JUMP_FALL_SPEED = 0.08;
         public static final double MAX_FALL_SPEED = 4.0;
+        public static final double WALL_FALL_SPEED = 0.05;
+        public static final double MAX_WALL_FALL_SPEED = 2.0;
         public static final double JUMP_START = 2.9;
         public static final double JUMP_STOP = 0.1;
+    }
+
+    public static class Bullet
+    {
+        // Collision
+        public static final int COL_WIDTH = 14;
+        public static final int COL_HEIGHT = 8;
+
+        // Movement
+        public static final double MOVE_SPEED = 3.8;
     }
 }
