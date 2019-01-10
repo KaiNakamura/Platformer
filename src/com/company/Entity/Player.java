@@ -2,14 +2,9 @@ package com.company.Entity;
 
 import com.company.Constants;
 import com.company.GamePanel;
-import com.company.GameState.GameState;
-import com.company.GameState.GameStateManager;
 import com.company.TileMap.TileMap;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Player extends GameObject
