@@ -6,10 +6,8 @@ import main.java.entity.Sprites;
 import main.java.tilemap.Tilemap;
 
 public class Blood extends Particle {
-	private static final int WIDTH = 16;
-	private static final int HEIGHT = 16;
-	private static final int HITBOX_WIDTH = 2;
-	private static final int HITBOX_HEIGHT = 2;
+	private static final int WIDTH = 2;
+	private static final int HEIGHT = 2;
 
 	private static final double FALL_SPEED = 0.2;
 	private static final double MAX_FALL_SPEED = 2.0;
@@ -37,13 +35,10 @@ public class Blood extends Particle {
 		width = WIDTH;
 		height = HEIGHT;
 
-		hitboxWidth = HITBOX_WIDTH;
-		hitboxHeight = HITBOX_HEIGHT;
-
 		setAnimation(new Animation(Sprites.BLOOD));
 
 		dy -= Math.random() * 3;
-		dx += Math.random();
+		dx += Math.random() * 2 - 1;
 	}
 
 	@Override

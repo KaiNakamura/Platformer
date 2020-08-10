@@ -5,17 +5,14 @@ import main.java.Constants.File;
 import main.java.audio.Audio;
 import main.java.entity.guns.bullets.Bullet;
 import main.java.entity.particles.Blood;
-import main.java.entity.particles.Particle;
+import main.java.entity.particles.ParticleEmitter;
 import main.java.tilemap.Tilemap;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 public class Enemy extends Entity {
-	private static final int WIDTH = 16;
-	private static final int HEIGHT = 16;
-	private static final int HITBOX_WIDTH = 10;
-	private static final int HITBOX_HEIGHT = 11;
+	private static final int WIDTH = 10;
+	private static final int HEIGHT = 11;
 
 	private static final double MOVE_SPEED = 0.5;
 	private static final double MAX_MOVE_SPEED = 2.5;
@@ -26,18 +23,19 @@ public class Enemy extends Entity {
 	private static final double MAX_FALL_SPEED = 4.0;
 
 	private static final int HEALTH = 2;
+	private static final int DAMAGE = 1;
 
-	private int health;
-	private int maxHealth;
-	private boolean facingRight;
+	private int health, maxHealth, damage;
 
 	private boolean hurt;
+
+	private boolean facingRight;
 
 	private Animation IDLE;
 	private Animation RUNNING;
 	private Animation HURT;
 	
-	private ArrayList<Particle> particles;
+	private ParticleEmitter particleEmitter;
 
 	protected Enemy(Game game, Tilemap tilemap) {
 		super(game, tilemap);
@@ -51,13 +49,11 @@ public class Enemy extends Entity {
 	public void init() {
 		width = WIDTH;
 		height = HEIGHT;
-
-		hitboxWidth = HITBOX_WIDTH;
-		hitboxHeight = HITBOX_HEIGHT;
 		
 		facingRight = Math.random() > 0.5;
 
 		health = maxHealth = HEALTH;
+		damage = DAMAGE;
 
 		IDLE = new Animation(Sprites.ENEMY_IDLE);
 		RUNNING = new Animation(Sprites.ENEMY_RUNNING);
@@ -65,7 +61,7 @@ public class Enemy extends Entity {
 
 		setAnimation(IDLE);
 
-		particles = new ArrayList<>();
+		particleEmitter = new ParticleEmitter();
 	}
 
 	@Override
@@ -76,22 +72,23 @@ public class Enemy extends Entity {
 
 			for (Bullet bullet : tilemap.getPlayer().getGun().getBullets()) {
 				if (!bullet.isHit() && intersects(bullet)) {
-					health -= bullet.getDamage();
 					bullet.setHit(true);
-					hurt = true;
-					game.getAudioPlayer().play(new Audio(File.ENEMY_HIT_AUDIO));
-					game.setScreenShake(4, 100);
-					game.delay(20);
-				}
-			}
-
-			if (health <= 0) {
-				dead = true;
-				game.getAudioPlayer().play(new Audio(File.ENEMY_DIE_AUDIO));
-				game.setScreenShake(8, 100);
-				for (int i = 0; i < 10; i++) {
-					Blood blood = new Blood(tilemap, x, y, dx, dy);
-					particles.add(blood);
+					health -= bullet.getDamage();
+					if (health <= 0) {
+						dead = true;
+						game.getAudioPlayer().play(new Audio(File.ENEMY_DIE_AUDIO));
+						game.setScreenShake(8, 100);
+						game.delay(25);
+						for (int i = 0; i < 10; i++) {
+							Blood blood = new Blood(tilemap, x, y, dx, dy);
+							particleEmitter.add(blood);
+						}
+					} else {
+						hurt = true;
+						game.getAudioPlayer().play(new Audio(File.ENEMY_HIT_AUDIO));
+						game.setScreenShake(4, 100);
+						game.delay(20);
+					}
 				}
 			}
 
@@ -109,14 +106,7 @@ public class Enemy extends Entity {
 			animation.update();
 		}
 
-		for (int i = 0; i < particles.size(); i++) {
-			Particle particle = particles.get(i);
-			if (particle.shouldRemove()) {
-				particles.remove(i);
-			} else {
-				particle.update();
-			}
-		}
+		particleEmitter.update(dt);
 	}
 
 	@Override
@@ -146,17 +136,15 @@ public class Enemy extends Entity {
 			}
 		}
 
-		for (Particle particle : particles) {
-			particle.draw(graphics);
-		}
+		particleEmitter.draw(graphics);
 	}
 
 	private void getNextPosition() {
 		// Movement
 		if (
-			(topLeftHit || topRightHit) ||
-			(facingRight && !bottomRightHit) ||
-			(!facingRight && !bottomLeftHit)
+			topHit() ||
+			(facingRight && !rightHit()) ||
+			(!facingRight && !leftHit())
 		) {
 			facingRight = !facingRight;
 			dx = -dx;
@@ -177,7 +165,7 @@ public class Enemy extends Entity {
 			}
 		} else {
 			if (dx > 0) {
-				if (bottomLeftHit || bottomRightHit) {
+				if (bottomHit()) {
 					dx -= GROUND_STOP_SPEED;
 				} else {
 					dx -= STOP_SPEED;
@@ -187,7 +175,7 @@ public class Enemy extends Entity {
 					dx = 0;
 				}
 			} else if (dx < 0) {
-				if (bottomLeftHit || bottomRightHit) {
+				if (bottomHit()) {
 					dx += GROUND_STOP_SPEED;
 				} else {
 					dx += STOP_SPEED;
@@ -219,6 +207,10 @@ public class Enemy extends Entity {
 
 	public int getMaxHealth() {
 		return maxHealth;
+	}
+
+	public int getDamage() {
+		return damage;
 	}
 
 	public void resetStance() {

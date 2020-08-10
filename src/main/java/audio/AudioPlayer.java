@@ -1,5 +1,7 @@
 package main.java.audio;
 
+import main.java.Constants.File;
+
 import java.util.ArrayList;
 
 public class AudioPlayer {
@@ -10,8 +12,8 @@ public class AudioPlayer {
 	}
 
 	public void update() {
-		for(int i = 0; i < audio.size(); i++) {
-			if (!audio.get(i).isRunning()) {
+		for (int i = 0; i < audio.size(); i++) {
+			if (audio.get(i).hasStopped()) {
 				audio.remove(i);
 			}
 		}
@@ -20,5 +22,14 @@ public class AudioPlayer {
 	public void play(Audio audio) {
 		this.audio.add(audio);
 		audio.play();
+	}
+
+	public void stop(File file) {
+		for (int i = 0; i < audio.size(); i++) {
+			if (audio.get(i).getFile() == file) {
+				audio.get(i).stop();
+				audio.remove(i);
+			}
+		}
 	}
 }

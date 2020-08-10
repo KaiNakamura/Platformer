@@ -42,7 +42,7 @@ public class Revolver extends Gun {
 				break;
 		}
 
-		game.getAudioPlayer().play(new Audio(Constants.File.SHOOT_AUDIO));
+		game.getAudioPlayer().play(new Audio(Constants.File.REVOLVER_SHOOT_AUDIO));
 		game.setScreenShake(6, 100);
 		
 		double dx = 0, dy = 0;

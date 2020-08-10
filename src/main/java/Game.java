@@ -1,8 +1,14 @@
 // TODO:
-// ParticleEmitter
 // Entity refactor
 // Hitbox class?
 // dt
+// Pausing
+// Experience orbs
+// Enemy superclass
+// Gui
+// Winning
+// Restart prompt
+// Remove xMap and yMap from Entity
 
 package main.java;
 

@@ -16,7 +16,6 @@ public abstract class Entity {
 	protected double x, y, dx, dy;
 	protected int width, height;
 
-	protected int hitboxWidth, hitboxHeight;
 	protected boolean topLeftHit, topRightHit, bottomLeftHit, bottomRightHit;
 
 	protected Animation animation;
@@ -45,6 +44,26 @@ public abstract class Entity {
 
 		landing = false;
 
+		// Check left and right
+		calculateCornerHits(xNext, y);
+
+		if (dx < 0) {
+			if (topLeftHit || bottomLeftHit) {
+				dx = 0;
+				xTemp = currentCol * Constants.TILE_SIZE + width / 2.0;
+			} else {
+				xTemp += dx;
+			}
+		} else if (dx > 0) {
+			if (topRightHit || bottomRightHit) {
+				dx = 0;
+				xTemp = (currentCol + 1) * Constants.TILE_SIZE - width / 2.0;
+			}
+			else {
+				xTemp += dx;
+			}
+		}
+
 		// Check up and down
 		calculateCornerHits(x, yNext);
 
@@ -52,7 +71,7 @@ public abstract class Entity {
 			// Top corners solid
 			if (topLeftHit || topRightHit) {
 				dy = 0;
-				yTemp = currentRow * Constants.TILE_SIZE + hitboxHeight / 2.0;
+				yTemp = currentRow * Constants.TILE_SIZE + height / 2.0;
 			} else {
 				yTemp += dy;
 			}
@@ -64,40 +83,19 @@ public abstract class Entity {
 					falling = false;
 					landing = true;
 				}
-				yTemp = (currentRow + 1) * Constants.TILE_SIZE - hitboxHeight / 2.0;
+				yTemp = (currentRow + 1) * Constants.TILE_SIZE - height / 2.0;
 			} else {
 				yTemp += dy;
 			}
 		}
 
-		// Check left and right
-		calculateCornerHits(xNext, y);
-
-		if (dx < 0) {
-			if (topLeftHit || bottomLeftHit) {
-				dx = 0;
-				xTemp = currentCol * Constants.TILE_SIZE + hitboxWidth / 2.0;
-			} else {
-				xTemp += dx;
-			}
-		} else if (dx > 0) {
-			if (topRightHit || bottomRightHit) {
-				dx = 0;
-				xTemp = (currentCol + 1) * Constants.TILE_SIZE - hitboxWidth / 2.0;
-			}
-			else {
-				xTemp += dx;
-			}
-		}
+		calculateCornerHits(xNext, yNext + 1);
 
 		if (!falling) {
-			calculateCornerHits(x, yNext + 1);
 			if (!bottomLeftHit && !bottomRightHit) {
 				falling = true;
 			}
 		}
-
-		calculateCornerHits(xNext, yNext + 1);
 
 		x = xTemp;
 		y = yTemp;
@@ -128,10 +126,10 @@ public abstract class Entity {
 	}
 
 	protected void calculateCornerHits(double x, double y) {
-		int left = (int)(x - hitboxWidth / 2.0) / Constants.TILE_SIZE;
-		int right = (int)(x + hitboxWidth / 2.0 - 1) / Constants.TILE_SIZE;
-		int top = (int)(y - hitboxHeight / 2.0) / Constants.TILE_SIZE;
-		int bottom = (int)(y + hitboxHeight / 2.0 - 1) / Constants.TILE_SIZE;
+		int left = (int)(x - width / 2.0) / Constants.TILE_SIZE;
+		int right = (int)(x + width / 2.0 - 1) / Constants.TILE_SIZE;
+		int top = (int)(y - height / 2.0) / Constants.TILE_SIZE;
+		int bottom = (int)(y + height / 2.0 - 1) / Constants.TILE_SIZE;
 
 		topLeftHit = tilemap.getTileType(top, left) == TileType.TERRAIN;
 		topRightHit = tilemap.getTileType(top, right) == TileType.TERRAIN;
@@ -143,10 +141,10 @@ public abstract class Entity {
 		double xFinal = x + xMap;
 		double yFinal = y + yMap;
 
-		return !(	xFinal + width < 0 ||
-					xFinal - width > Constants.WIDTH ||
-					yFinal + height < 0 ||
-					yFinal - height > Constants.HEIGHT
+		return !(	xFinal + animation.getWidth() < 0 ||
+					xFinal - animation.getWidth() > Constants.WIDTH ||
+					yFinal + animation.getHeight() < 0 ||
+					yFinal - animation.getHeight() > Constants.HEIGHT
 		);
 	}
 
@@ -166,16 +164,44 @@ public abstract class Entity {
 		return height;
 	}
 
-	public int getHitboxWidth() {
-		return hitboxWidth;
-	}
-
-	public int getHitboxHeight() {
-		return hitboxHeight;
-	}
-
 	public Rectangle getRectangle() {
-		return new Rectangle((int) x, (int) y, hitboxWidth, hitboxHeight);
+		return new Rectangle((int) x, (int) y, width, height);
+	}
+
+	public boolean topLeftHit() {
+		return topLeftHit;
+	}
+
+	public boolean topRightHit() {
+		return topRightHit;
+	}
+
+	public boolean bottomLeftHit() {
+		return bottomLeftHit;
+	}
+
+	public boolean bottomRightHit() {
+		return bottomRightHit;
+	}
+
+	public boolean topHit() {
+		return topLeftHit || topRightHit;
+	}
+
+	public boolean bottomHit() {
+		return bottomLeftHit || bottomRightHit;
+	}
+
+	public boolean leftHit() {
+		return topLeftHit || bottomLeftHit;
+	}
+
+	public boolean rightHit() {
+		return topRightHit || bottomRightHit;
+	}
+
+	public boolean hit() {
+		return topLeftHit || topRightHit || bottomLeftHit || bottomRightHit;
 	}
 
 	public boolean isMovingLeft() {

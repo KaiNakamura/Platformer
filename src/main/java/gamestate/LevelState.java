@@ -26,12 +26,12 @@ public class LevelState extends GameState {
 		init();
 	}
 
-    public LevelState() {
-        this(Game.getInstance());
-    }
+	public LevelState() {
+		this(Game.getInstance());
+	}
 
-    @Override
-    public void init() {
+	@Override
+	public void init() {
 		tilemap = new Level(new Tileset(File.TILESET), new Background(File.BACKGROUND));
 
 		entities = new ArrayList<>();
@@ -43,18 +43,18 @@ public class LevelState extends GameState {
 		for (Entity entity : entities) {
 			entity.init();
 		}
-    }
+	}
 
-    @Override
-    public void update(double dt) {
-        player.setLeft(Key.LEFT.isDown());
-        player.setRight(Key.RIGHT.isDown());
-        player.setUp(Key.UP.isDown());
-        player.setDown(Key.DOWN.isDown());
-        player.setJumping(Key.JUMP.isDown());
+	@Override
+	public void update(double dt) {
+		player.setLeft(Key.LEFT.isDown());
+		player.setRight(Key.RIGHT.isDown());
+		player.setUp(Key.UP.isDown());
+		player.setDown(Key.DOWN.isDown());
+		player.setJumping(Key.JUMP.isDown());
 		player.setShooting(Key.SHOOT.isPressed());
 
-        if (Key.DOWN.isPressed()) {
+		if (Key.DOWN.isPressed()) {
 			player.setInspecting(true);
 		}
 
@@ -67,54 +67,54 @@ public class LevelState extends GameState {
 			}
 		}
 
-        tilemap.setPosition(
+		tilemap.setPosition(
 			Constants.WIDTH / 2.0 - player.getX() - player.getLookX(),
 			Constants.HEIGHT / 2.0 - player.getY() - player.getLookY(),
 			true
 		);
 
 		resetKeys();
-    }
+	}
 
-    @Override
-    public void draw(Graphics2D graphics) {
+	@Override
+	public void draw(Graphics2D graphics) {
 		tilemap.drawBackground(graphics);
 		for (Entity entity : entities) {
 			entity.draw(graphics);
 		}
 		tilemap.drawTiles(graphics);
-    }
+	}
 
-    private void resetKeys() {
-        for (Key key : Key.values()) {
-            key.setPressed(false);
-            key.setReleased(false);
-        }
-    }
+	private void resetKeys() {
+		for (Key key : Key.values()) {
+			key.setPressed(false);
+			key.setReleased(false);
+		}
+	}
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        int code = e.getKeyCode();
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int code = e.getKeyCode();
 
-        for (Key key : Key.values()) {
-            if (key.equals(code)) {
-                if(!key.isDown()) {
+		for (Key key : Key.values()) {
+			if (key.equals(code)) {
+				if(!key.isDown()) {
 					key.setPressed(true);
 				}
-                key.setDown(true);
-            }
-        }
-    }
+				key.setDown(true);
+			}
+		}
+	}
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-        int code = e.getKeyCode();
+	@Override
+	public void keyReleased(KeyEvent e) {
+		int code = e.getKeyCode();
 
-        for (Key key : Key.values()) {
-            if (key.equals(code)) {
-                key.setReleased(true);
-                key.setDown(false);
-            }
-        }
-    }
+		for (Key key : Key.values()) {
+			if (key.equals(code)) {
+				key.setReleased(true);
+				key.setDown(false);
+			}
+		}
+	}
 }

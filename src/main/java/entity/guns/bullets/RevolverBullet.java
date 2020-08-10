@@ -7,13 +7,11 @@ import main.java.entity.Sprites;
 import main.java.tilemap.Tilemap;
 
 public class RevolverBullet extends Bullet {
-	private static final int WIDTH = 16;
-	private static final int HEIGHT = 16;
-	private static final int HITBOX_WIDTH = 10;
-	private static final int HITBOX_HEIGHT = 6;
+	private static final int WIDTH = 10;
+	private static final int HEIGHT = 6;
 
 	private static final double MOVE_SPEED = 8;
-	private static final double DAMAGE = 1;
+	private static final int DAMAGE = 1;
 
 	private Animation NULL;
 	private Animation FIRED;
@@ -49,9 +47,6 @@ public class RevolverBullet extends Bullet {
 	public void init() {
 		width = WIDTH;
 		height = HEIGHT;
-
-		hitboxWidth = HITBOX_WIDTH;
-		hitboxHeight = HITBOX_HEIGHT;
 
 		NULL = new Animation(Sprites.NULL);
 		FIRED = new Animation(Sprites.REVOLVER_BULLET_FIRED);

@@ -7,8 +7,11 @@ public class Main {
 		JFrame window = new JFrame("Game");
 		window.setContentPane(Game.getInstance());
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
-        window.pack();
-        window.setVisible(true);
+		window.setResizable(false);
+		window.pack();
+		window.setVisible(true);
+		window.setAlwaysOnTop(true);
+		window.toFront();
+		window.setAlwaysOnTop(false);
 	}
 }

@@ -7,15 +7,15 @@ import main.java.Game;
 import main.java.audio.Audio;
 import main.java.entity.guns.Gun;
 import main.java.entity.guns.Revolver;
+import main.java.entity.particles.Blood;
+import main.java.entity.particles.ParticleEmitter;
 import main.java.tilemap.Tilemap;
 
 import java.awt.*;
 
 public class Player extends Entity {
-	private static final int WIDTH = 16;
+	private static final int WIDTH = 12;
 	private static final int HEIGHT = 16;
-	private static final int HITBOX_WIDTH = 12;
-	private static final int HITBOX_HEIGHT = 16;
 
 	private static final double MOVE_SPEED = 0.5;
 	private static final double MAX_MOVE_SPEED = 2.5;
@@ -28,17 +28,21 @@ public class Player extends Entity {
 	private static final double JUMP_FALL_SPEED = 0.25;
 	private static final double MAX_FALL_SPEED = 4.0;
 
-	private static final int HEALTH = 2;
+	private static final int HEALTH = 3;
+	private static final double INVINCIBILITY_TIME = 1000;
 
-	private int health;
-	private int maxHealth;
-	private boolean facingRight;
+	private int health, maxHealth;
 
 	private double lookX, lookY;
 
 	private Gun gun;
 
 	private boolean shooting, inspecting;
+
+	private boolean hurt;
+	private long hurtTimer;
+
+	private boolean facingRight;
 
 	private Animation IDLE;
 	private Animation RUNNING;
@@ -52,6 +56,8 @@ public class Player extends Entity {
 	private Animation LOOK_DOWN_JUMPING;
 	private Animation LOOK_DOWN_FALLING;
 
+	private ParticleEmitter particleEmitter;
+
 	protected Player(Game game, Tilemap tilemap) {
 		super(game, tilemap);
 	}
@@ -64,9 +70,6 @@ public class Player extends Entity {
 	public void init() {
 		width = WIDTH;
 		height = HEIGHT;
-
-		hitboxWidth = HITBOX_WIDTH;
-		hitboxHeight = HITBOX_HEIGHT;
 		
 		facingRight = true;
 
@@ -87,125 +90,172 @@ public class Player extends Entity {
 		LOOK_DOWN_FALLING = new Animation(Sprites.PLAYER_REVOLVER_LOOK_DOWN_FALLING);
 
 		setAnimation(IDLE);
+
+		particleEmitter = new ParticleEmitter();
 	}
 
 	@Override
 	public void update(double dt) {
-		super.update(dt);
-		getNextPosition();
+		if (!dead) {
+			super.update(dt);
+			getNextPosition();
 
-		Constants.Direction direction;
-		if (up) {
-			direction = Constants.Direction.UP;
-			lookY -= Camera.LOOK_SPEED;
-		} else if (down && falling || inspecting) {
-			direction = Constants.Direction.DOWN;
-			lookY += Camera.LOOK_SPEED;
-		} else {
-			if (facingRight) {
-				direction = Constants.Direction.RIGHT;
-				lookX += Camera.LOOK_SPEED;
-			} else {
-				direction = Constants.Direction.LEFT;
-				lookX -= Camera.LOOK_SPEED;
-			}
-
-			lookY += lookY > 0 ? -Camera.LOOK_SPEED : Camera.LOOK_SPEED;
-		}
-
-		if (lookX > Camera.MAX_LOOK) {
-			lookX = Camera.MAX_LOOK;
-		} else if (lookX < -Camera.MAX_LOOK) {
-			lookX = -Camera.MAX_LOOK;
-		}
-		if (lookY > Camera.MAX_LOOK) {
-			lookY = Camera.MAX_LOOK;
-		} else if (lookY < -Camera.MAX_LOOK) {
-			lookY = -Camera.MAX_LOOK;
-		}
-
-		if (shooting) {
-			if (facingRight) {
-				dx -= gun.getRecoil();
-			} else {
-				dx += gun.getRecoil();
-			}
-			gun.shoot(direction, x, y);
-		}
-		gun.update(dt);
-
-		// Set animation
-		if (right && !left) {
-			facingRight = true;
-		} else if (left && !right) {
-			facingRight = false;
-		}
-
-		if (left || right || up || jumping || falling || shooting) {
-			inspecting = false;
-		}
-
-		if (falling) {
-			if (jumping) {
-				if (up) {
-					setAnimation(LOOK_UP_JUMPING);
-				} else if (down) {
-					setAnimation(LOOK_DOWN_JUMPING);
-				} else {
-					setAnimation(JUMPING);
+			if (hurt) {
+				long elapsed = (System.nanoTime() - hurtTimer) / 1000000;
+				if (elapsed > INVINCIBILITY_TIME) {
+					hurt = false;
 				}
 			} else {
-				if (up) {
-					setAnimation(LOOK_UP_FALLING);
-				} else if (down) {
-					setAnimation(LOOK_DOWN_FALLING);
-				} else {
-					setAnimation(FALLING);
+				for (Enemy enemy : tilemap.getEnemies()) {
+					if (!enemy.isDead() && intersects(enemy)) {
+						health -= enemy.getDamage();
+						if (health <= 0) {
+							dead = true;
+							game.getAudioPlayer().play(new Audio(File.PLAYER_DIE_AUDIO));
+							game.getAudioPlayer().stop(File.MUSIC);
+							game.setScreenShake(16, 100);
+							game.delay(30);
+							for (int i = 0; i < 20; i++) {
+								Blood blood = new Blood(tilemap, x, y, dx, dy);
+								particleEmitter.add(blood);
+							}
+						} else {
+							hurt = true;
+							hurtTimer = System.nanoTime();
+							game.getAudioPlayer().play(new Audio(File.PLAYER_HIT_AUDIO));
+							game.setScreenShake(8, 100);
+							game.delay(25);
+						}
+					}
 				}
 			}
-		} else if (left ^ right) {
+
+
+			Constants.Direction direction;
 			if (up) {
-				setAnimation(LOOK_UP_RUNNING);
+				direction = Constants.Direction.UP;
+				lookY -= Camera.LOOK_SPEED;
+			} else if (down && falling || inspecting) {
+				direction = Constants.Direction.DOWN;
+				lookY += Camera.LOOK_SPEED;
 			} else {
-				setAnimation(RUNNING);
+				if (facingRight) {
+					direction = Constants.Direction.RIGHT;
+					lookX += Camera.LOOK_SPEED;
+				} else {
+					direction = Constants.Direction.LEFT;
+					lookX -= Camera.LOOK_SPEED;
+				}
+
+				lookY += lookY > 0 ? -Camera.LOOK_SPEED : Camera.LOOK_SPEED;
 			}
-		} else if (up) {
-			setAnimation(LOOK_UP);
-		} else if (inspecting) {
-			setAnimation(INSPECT);
-		} else {
-			setAnimation(IDLE);
+
+			if (lookX > Camera.MAX_LOOK) {
+				lookX = Camera.MAX_LOOK;
+			} else if (lookX < -Camera.MAX_LOOK) {
+				lookX = -Camera.MAX_LOOK;
+			}
+			if (lookY > Camera.MAX_LOOK) {
+				lookY = Camera.MAX_LOOK;
+			} else if (lookY < -Camera.MAX_LOOK) {
+				lookY = -Camera.MAX_LOOK;
+			}
+
+			if (shooting) {
+				if (facingRight) {
+					dx -= gun.getRecoil();
+				} else {
+					dx += gun.getRecoil();
+				}
+				gun.shoot(direction, x, y);
+			}
+
+			// Set animation
+			if (right && !left) {
+				facingRight = true;
+			} else if (left && !right) {
+				facingRight = false;
+			}
+
+			if (left || right || up || jumping || falling || shooting) {
+				inspecting = false;
+			}
+
+			if (falling) {
+				if (jumping) {
+					if (up) {
+						setAnimation(LOOK_UP_JUMPING);
+					} else if (down) {
+						setAnimation(LOOK_DOWN_JUMPING);
+					} else {
+						setAnimation(JUMPING);
+					}
+				} else {
+					if (up) {
+						setAnimation(LOOK_UP_FALLING);
+					} else if (down) {
+						setAnimation(LOOK_DOWN_FALLING);
+					} else {
+						setAnimation(FALLING);
+					}
+				}
+			} else if (left ^ right) {
+				if (up) {
+					setAnimation(LOOK_UP_RUNNING);
+				} else {
+					setAnimation(RUNNING);
+				}
+			} else if (up) {
+				setAnimation(LOOK_UP);
+			} else if (inspecting) {
+				setAnimation(INSPECT);
+			} else {
+				setAnimation(IDLE);
+			}
+
+			animation.update();
 		}
 
-		animation.update();
+		gun.update(dt);
+		particleEmitter.update(dt);
 	}
 
 	@Override
 	public void draw(Graphics2D graphics) {
-		setMapPosition();
+		if (!dead) {
+			setMapPosition();
 
-		int drawX = (int) (x + xMap - animation.getWidth() / 2.0);
-		int drawY = (int) (y + yMap - animation.getWidth() / 2.0);
+			if (hurt) {
+				long elapsed = (System.nanoTime() - hurtTimer) / 1000000;
+				if (elapsed / 100 % 2 == 0) {
+					return;
+				}
+			}
 
-		if (facingRight) {
-			graphics.drawImage(
-				animation.getImage(),
-				drawX,
-				drawY,
-				null
-			);
-		} else {
-			graphics.drawImage(
-				animation.getImage(),
-				drawX + animation.getWidth(),
-				drawY,
-				-animation.getWidth(),
-				animation.getHeight(),
-				null
-			);
+			int drawX = (int) (x + xMap - animation.getWidth() / 2.0);
+			int drawY = (int) (y + yMap - animation.getWidth() / 2.0);
+
+			if (facingRight) {
+				graphics.drawImage(
+					animation.getImage(),
+					drawX,
+					drawY,
+					null
+				);
+			} else {
+				graphics.drawImage(
+					animation.getImage(),
+					drawX + animation.getWidth(),
+					drawY,
+					-animation.getWidth(),
+					animation.getHeight(),
+					null
+				);
+			}
 		}
 
 		gun.draw(graphics);
+		particleEmitter.draw(graphics);
 	}
 
 	private void getNextPosition() {
@@ -222,7 +272,7 @@ public class Player extends Entity {
 			}
 		} else {
 			if (dx > 0) {
-				if (bottomLeftHit || bottomRightHit) {
+				if (bottomHit()) {
 					dx -= GROUND_STOP_SPEED;
 				} else {
 					dx -= STOP_SPEED;
@@ -232,7 +282,7 @@ public class Player extends Entity {
 					dx = 0;
 				}
 			} else if (dx < 0) {
-				if (bottomLeftHit || bottomRightHit) {
+				if (bottomHit()) {
 					dx += GROUND_STOP_SPEED;
 				} else {
 					dx += STOP_SPEED;
@@ -248,7 +298,7 @@ public class Player extends Entity {
 		if (jumping && !falling) {
 			dy = -JUMP_START;
 			falling = true;
-			game.getAudioPlayer().play(new Audio(File.JUMP_AUDIO));
+			game.getAudioPlayer().play(new Audio(File.PLAYER_JUMP_AUDIO));
 		}
 
 		// Falling
@@ -274,7 +324,7 @@ public class Player extends Entity {
 
 		// Landing
 		if (landing) {
-			game.getAudioPlayer().play(new Audio(File.LAND_AUDIO));
+			game.getAudioPlayer().play(new Audio(File.PLAYER_LAND_AUDIO));
 		}
 	}
 

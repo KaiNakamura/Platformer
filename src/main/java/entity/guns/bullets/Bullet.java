@@ -10,7 +10,7 @@ import java.awt.*;
 public abstract class Bullet extends Entity {
 	protected Constants.Direction direction;
 	protected boolean fired, hit;
-	protected double damage;
+	protected int damage;
 
 	protected Bullet(
 		Game game,
@@ -59,7 +59,7 @@ public abstract class Bullet extends Entity {
 					drawX + animation.getWidth(),
 					drawY,
 					-animation.getWidth(),
-					height,
+					animation.getHeight(),
 					null
 				);
 				break;
@@ -92,7 +92,7 @@ public abstract class Bullet extends Entity {
 	@Override
 	protected void calculateCornerHits(double x, double y) {
 		super.calculateCornerHits(x, y);
-		if (topLeftHit || topRightHit || bottomLeftHit || bottomRightHit) {
+		if (hit()) {
 			hit = true;
 		}
 	}
@@ -105,7 +105,7 @@ public abstract class Bullet extends Entity {
 		return hit;
 	}
 
-	public double getDamage() {
+	public int getDamage() {
 		return damage;
 	}
 	
