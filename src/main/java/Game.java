@@ -9,6 +9,11 @@
 // Winning
 // Restart prompt
 // Remove xMap and yMap from Entity
+// More enemies
+// Depth first search map generation
+// Smoke particles
+// Refactor some speeds to accelerations
+// Experience pitch up
 
 package main.java;
 

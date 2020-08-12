@@ -8,6 +8,7 @@ import main.java.Constants;
 import main.java.Constants.File;
 import main.java.Constants.Key;
 import main.java.Game;
+import main.java.entity.Door;
 import main.java.entity.Entity;
 import main.java.entity.Player;
 import main.java.tilemap.Background;
@@ -20,6 +21,7 @@ public class LevelState extends GameState {
 	
 	private ArrayList<Entity> entities;
 	private Player player;
+	private ArrayList<Door> doors;
 
 	protected LevelState(Game game) {
 		super(game, GameStateType.LEVEL);
@@ -36,7 +38,9 @@ public class LevelState extends GameState {
 
 		entities = new ArrayList<>();
 		player = tilemap.getPlayer();
+		doors = tilemap.getDoors();
 
+		entities.addAll(tilemap.getDoors());
 		entities.add(player);
 		entities.addAll(tilemap.getEnemies());
 
@@ -67,9 +71,15 @@ public class LevelState extends GameState {
 			}
 		}
 
+		for (Door door : doors) {
+			if (door.isEntered()) {
+				init();
+			}
+		}
+
 		tilemap.setPosition(
-			Constants.WIDTH / 2.0 - player.getX() - player.getLookX(),
-			Constants.HEIGHT / 2.0 - player.getY() - player.getLookY(),
+			(int) (Constants.WIDTH / 2.0 - player.getX() - player.getLookX()),
+			(int) (Constants.HEIGHT / 2.0 - player.getY() - player.getLookY()),
 			true
 		);
 

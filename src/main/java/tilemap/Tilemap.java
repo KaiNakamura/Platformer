@@ -2,6 +2,7 @@ package main.java.tilemap;
 
 import main.java.Constants;
 import main.java.Constants.File;
+import main.java.entity.Door;
 import main.java.entity.Enemy;
 import main.java.entity.Player;
 
@@ -30,6 +31,7 @@ public class Tilemap {
 
 	private Player player;
 	private ArrayList<Enemy> enemies;
+	private ArrayList<Door> doors;
 
 	protected Tilemap(
 		TileCode[][] map,
@@ -63,6 +65,7 @@ public class Tilemap {
 		yMax = 0;
 
 		enemies = new ArrayList<>();
+		doors = new ArrayList<>();
 
 		for (int row = 0; row < numRows; row++) {
 			for (int col = 0; col < numCols; col++) {
@@ -86,7 +89,12 @@ public class Tilemap {
 						Enemy enemy = new Enemy(this);
 						enemy.setPosition(x, y);
 						enemies.add(enemy);
-						
+						break;
+					case DOOR:
+						Door door = new Door(this);
+						door.setPosition(x, y);
+						doors.add(door);
+						break;
 					default:
 						break;
 				}
@@ -190,9 +198,9 @@ public class Tilemap {
 	public TileType getTileType(int row, int col) {
 		if (
 			row < 0 ||
-			row >= map.length - 1 ||
+			row > map.length - 1 ||
 			col < 0 ||
-			col >= map[0].length - 1
+			col > map[0].length - 1
 		) {
 			return TileType.AIR;
 		}
@@ -287,5 +295,9 @@ public class Tilemap {
 
 	public ArrayList<Enemy> getEnemies() {
 		return enemies;
+	}
+
+	public ArrayList<Door> getDoors() {
+		return doors;
 	}
 }

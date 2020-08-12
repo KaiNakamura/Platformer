@@ -48,14 +48,14 @@ public abstract class Entity {
 		calculateCornerHits(xNext, y);
 
 		if (dx < 0) {
-			if (topLeftHit || bottomLeftHit) {
+			if (leftHit()) {
 				dx = 0;
 				xTemp = currentCol * Constants.TILE_SIZE + width / 2.0;
 			} else {
 				xTemp += dx;
 			}
 		} else if (dx > 0) {
-			if (topRightHit || bottomRightHit) {
+			if (rightHit()) {
 				dx = 0;
 				xTemp = (currentCol + 1) * Constants.TILE_SIZE - width / 2.0;
 			}
@@ -69,7 +69,7 @@ public abstract class Entity {
 
 		if (dy < 0) {
 			// Top corners solid
-			if (topLeftHit || topRightHit) {
+			if (topHit()) {
 				dy = 0;
 				yTemp = currentRow * Constants.TILE_SIZE + height / 2.0;
 			} else {
@@ -77,7 +77,7 @@ public abstract class Entity {
 			}
 		} else if (dy > 0) {
 			// Bottom corners solid
-			if (bottomLeftHit || bottomRightHit) {
+			if (bottomHit()) {
 				dy = 0;
 				if (falling) {
 					falling = false;
@@ -92,7 +92,7 @@ public abstract class Entity {
 		calculateCornerHits(xNext, yNext + 1);
 
 		if (!falling) {
-			if (!bottomLeftHit && !bottomRightHit) {
+			if (!bottomHit()) {
 				falling = true;
 			}
 		}

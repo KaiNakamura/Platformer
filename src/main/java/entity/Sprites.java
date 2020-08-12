@@ -38,7 +38,10 @@ public enum Sprites {
 	ENEMY_RUNNING(1, 3, 100, 16, 16, File.ENEMY_SPRITES),
 	ENEMY_HURT(2, 1, 50, 16, 16, File.ENEMY_SPRITES),
 
-	BLOOD(0, 1, 0, 16, 16, File.BLOOD_SPRITES);
+	BLOOD(0, 1, 0, 16, 16, File.BLOOD_SPRITES),
+	EXPERIENCE(0, 1, 0, 16, 16, File.EXPERIENCE_SPRITES),
+
+	DOOR(0, 1, 0, 16, 16, File.DOOR_SPRITES);
 
 	private int row;
 	private int numFrames;

@@ -28,10 +28,11 @@ public class Player extends Entity {
 	private static final double JUMP_FALL_SPEED = 0.25;
 	private static final double MAX_FALL_SPEED = 4.0;
 
-	private static final int HEALTH = 3;
+	private static final int HEALTH = 1000;
 	private static final double INVINCIBILITY_TIME = 1000;
 
 	private int health, maxHealth;
+	private int experience;
 
 	private double lookX, lookY;
 
@@ -336,6 +337,10 @@ public class Player extends Entity {
 		return maxHealth;
 	}
 
+	public int getExperience() {
+		return experience;
+	}
+
 	public double getLookX() {
 		return lookX;
 	}
@@ -354,6 +359,14 @@ public class Player extends Entity {
 
 	public boolean isInspecting() {
 		return inspecting;
+	}
+
+	public void setExperience(int experience) {
+		this.experience = experience;
+	}
+
+	public void addExperience(int experience) {
+		this.experience += experience;
 	}
 	
 	public void setShooting(boolean shooting) {

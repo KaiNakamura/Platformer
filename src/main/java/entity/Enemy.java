@@ -5,6 +5,7 @@ import main.java.Constants.File;
 import main.java.audio.Audio;
 import main.java.entity.guns.bullets.Bullet;
 import main.java.entity.particles.Blood;
+import main.java.entity.particles.Experience;
 import main.java.entity.particles.ParticleEmitter;
 import main.java.tilemap.Tilemap;
 
@@ -82,6 +83,10 @@ public class Enemy extends Entity {
 						for (int i = 0; i < 10; i++) {
 							Blood blood = new Blood(tilemap, x, y, dx, dy);
 							particleEmitter.add(blood);
+						}
+						for (int i = 0; i < 3; i++) {
+							Experience experience = new Experience(tilemap, x, y, dx, dy);
+							particleEmitter.add(experience);
 						}
 					} else {
 						hurt = true;

@@ -33,6 +33,9 @@ public class Constants {
 		REVOLVER_SPRITES("sprites/guns/revolver.png"),
 		ENEMY_SPRITES("sprites/enemies/enemy.png"),
 		BLOOD_SPRITES("sprites/particles/blood.png"),
+		EXPERIENCE_SPRITES("sprites/particles/experience.png"),
+		DOOR_SPRITES("sprites/door.png"),
+
 		PLAYER_JUMP_AUDIO("audio/playerjump.wav"),
 		PLAYER_LAND_AUDIO("audio/playerland.wav"),
 		PLAYER_HIT_AUDIO("audio/playerhit.wav"),
@@ -40,7 +43,9 @@ public class Constants {
 		REVOLVER_SHOOT_AUDIO("audio/revolvershoot.wav"),
 		ENEMY_HIT_AUDIO("audio/enemyhit.wav"),
 		ENEMY_DIE_AUDIO("audio/enemydie.wav"),
+		EXPERIENCE_AUDIO("audio/experience.wav"),
 		MUSIC("audio/music.wav"),
+
 		CORRIDOR_1("maps/corridor1.csv"),
 		DROP_1("maps/drop1.csv"),
 		LANDING_1("maps/landing1.csv"),

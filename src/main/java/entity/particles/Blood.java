@@ -46,7 +46,7 @@ public class Blood extends Particle {
 		super.update(dt);
 
 		if (dx > 0) {
-			if (bottomLeftHit || bottomRightHit) {
+			if (bottomHit()) {
 				dx -= GROUND_STOP_SPEED;
 			} else {
 				dx -= STOP_SPEED;
@@ -56,7 +56,7 @@ public class Blood extends Particle {
 				dx = 0;
 			}
 		} else if (dx < 0) {
-			if (bottomLeftHit || bottomRightHit) {
+			if (bottomHit()) {
 				dx += GROUND_STOP_SPEED;
 			} else {
 				dx += STOP_SPEED;

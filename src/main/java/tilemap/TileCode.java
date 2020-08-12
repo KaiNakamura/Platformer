@@ -12,7 +12,8 @@ public enum TileCode {
 	TERRAIN_8('8', TileType.TERRAIN),
 	TERRAIN_9('9', TileType.TERRAIN),
 	PLAYER('p', TileType.ENTITY),
-	ENEMY('e', TileType.ENTITY);
+	ENEMY('e', TileType.ENTITY),
+	DOOR('d', TileType.ENTITY);
 
 	private char code;
 	private TileType tileType;
