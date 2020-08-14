@@ -2,12 +2,12 @@ package main.java.gamestate;
 
 import main.java.Constants;
 import main.java.Constants.File;
+import main.java.Constants.Key;
 import main.java.audio.Audio;
 import main.java.Game;
 import main.java.tilemap.Background;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 public class MenuState extends GameState {
 	public enum MenuChoice {
@@ -56,6 +56,14 @@ public class MenuState extends GameState {
 
 	@Override
 	public void update(double dt) {
+		if (Key.JUMP.isPressed()) {
+			select();
+		} else if (Key.UP.isPressed()) {
+			moveChoice(1);
+		} else if (Key.DOWN.isPressed()) {
+			moveChoice(-1);
+		}
+
 		background.update(dt);
 	}
 
@@ -142,22 +150,5 @@ public class MenuState extends GameState {
 				this.menuChoice = menuChoice;
 			}
 		}
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		int code = e.getKeyCode();
-
-		if (Constants.Key.JUMP.equals(code)) {
-			select();
-		} else if (Constants.Key.UP.equals(code)) {
-			moveChoice(1);
-		} else if (Constants.Key.DOWN.equals(code)) {
-			moveChoice(-1);
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
 	}
 }

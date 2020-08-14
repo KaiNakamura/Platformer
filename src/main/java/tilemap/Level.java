@@ -1,14 +1,14 @@
 package main.java.tilemap;
 
 public class Level extends Tilemap {
-	private static final int ROOMS_ACROSS = 8;
+	private static final int ROOMS_ACROSS = 4;
 	private static final int ROOMS_DOWN = 4;
 	private static final int ROOM_WIDTH = 20;
 	private static final int ROOM_HEIGHT = 15;
 	private static final int TILES_ACROSS = ROOMS_ACROSS * ROOM_WIDTH + 2;
 	private static final int TILES_DOWN = ROOMS_DOWN * ROOM_HEIGHT + 2;
 
-	private static final double DROP_CHANCE = 0.1;
+	private static final double DROP_CHANCE = 0.2;
 
 	public Level(Tileset tileset, Background background) {
 		super(Level.generateMap(), tileset, background);

@@ -1,7 +1,7 @@
 package main.java.entity;
 
-import main.java.Constants;
 import main.java.Constants.Camera;
+import main.java.Constants.Direction;
 import main.java.Constants.File;
 import main.java.Game;
 import main.java.audio.Audio;
@@ -34,7 +34,7 @@ public class Player extends Entity {
 	private int health, maxHealth;
 	private int experience;
 
-	private double lookX, lookY;
+	private double cameraX, cameraY;
 
 	private Gun gun;
 
@@ -76,6 +76,9 @@ public class Player extends Entity {
 
 		health = maxHealth = HEALTH;
 
+		cameraX = facingRight ? Camera.MAX_X : Camera.MIN_X;
+		cameraY = Camera.OFFSET_Y;
+
 		gun = new Revolver(tilemap);
 
 		IDLE = new Animation(Sprites.PLAYER_REVOLVER_IDLE);
@@ -83,12 +86,22 @@ public class Player extends Entity {
 		JUMPING = new Animation(Sprites.PLAYER_REVOLVER_JUMPING);
 		FALLING = new Animation(Sprites.PLAYER_REVOLVER_FALLING);
 		LOOK_UP = new Animation(Sprites.PLAYER_REVOLVER_LOOK_UP);
-		LOOK_UP_RUNNING = new Animation(Sprites.PLAYER_REVOLVER_LOOK_UP_RUNNING);
-		LOOK_UP_JUMPING = new Animation(Sprites.PLAYER_REVOLVER_LOOK_UP_JUMPING);
-		LOOK_UP_FALLING = new Animation(Sprites.PLAYER_REVOLVER_LOOK_UP_FALLING);
+		LOOK_UP_RUNNING = new Animation(
+			Sprites.PLAYER_REVOLVER_LOOK_UP_RUNNING
+		);
+		LOOK_UP_JUMPING = new Animation(
+			Sprites.PLAYER_REVOLVER_LOOK_UP_JUMPING
+		);
+		LOOK_UP_FALLING = new Animation(
+			Sprites.PLAYER_REVOLVER_LOOK_UP_FALLING
+		);
 		INSPECT = new Animation(Sprites.PLAYER_REVOLVER_INSPECT);
-		LOOK_DOWN_JUMPING = new Animation(Sprites.PLAYER_REVOLVER_LOOK_DOWN_JUMPING);
-		LOOK_DOWN_FALLING = new Animation(Sprites.PLAYER_REVOLVER_LOOK_DOWN_FALLING);
+		LOOK_DOWN_JUMPING = new Animation(
+			Sprites.PLAYER_REVOLVER_LOOK_DOWN_JUMPING
+		);
+		LOOK_DOWN_FALLING = new Animation(
+			Sprites.PLAYER_REVOLVER_LOOK_DOWN_FALLING
+		);
 
 		setAnimation(IDLE);
 
@@ -100,6 +113,7 @@ public class Player extends Entity {
 		if (!dead) {
 			super.update(dt);
 			getNextPosition();
+			getNextCameraPosition();
 
 			if (hurt) {
 				long elapsed = (System.nanoTime() - hurtTimer) / 1000000;
@@ -112,7 +126,9 @@ public class Player extends Entity {
 						health -= enemy.getDamage();
 						if (health <= 0) {
 							dead = true;
-							game.getAudioPlayer().play(new Audio(File.PLAYER_DIE_AUDIO));
+							game.getAudioPlayer().play(
+								new Audio(File.PLAYER_DIE_AUDIO)
+							);
 							game.getAudioPlayer().stop(File.MUSIC);
 							game.setScreenShake(16, 100);
 							game.delay(30);
@@ -123,7 +139,9 @@ public class Player extends Entity {
 						} else {
 							hurt = true;
 							hurtTimer = System.nanoTime();
-							game.getAudioPlayer().play(new Audio(File.PLAYER_HIT_AUDIO));
+							game.getAudioPlayer().play(
+								new Audio(File.PLAYER_HIT_AUDIO)
+							);
 							game.setScreenShake(8, 100);
 							game.delay(25);
 						}
@@ -131,42 +149,20 @@ public class Player extends Entity {
 				}
 			}
 
-
-			Constants.Direction direction;
-			if (up) {
-				direction = Constants.Direction.UP;
-				lookY -= Camera.LOOK_SPEED;
-			} else if (down && falling || inspecting) {
-				direction = Constants.Direction.DOWN;
-				lookY += Camera.LOOK_SPEED;
-			} else {
-				if (facingRight) {
-					direction = Constants.Direction.RIGHT;
-					lookX += Camera.LOOK_SPEED;
-				} else {
-					direction = Constants.Direction.LEFT;
-					lookX -= Camera.LOOK_SPEED;
-				}
-
-				lookY += lookY > 0 ? -Camera.LOOK_SPEED : Camera.LOOK_SPEED;
-			}
-
-			if (lookX > Camera.MAX_LOOK) {
-				lookX = Camera.MAX_LOOK;
-			} else if (lookX < -Camera.MAX_LOOK) {
-				lookX = -Camera.MAX_LOOK;
-			}
-			if (lookY > Camera.MAX_LOOK) {
-				lookY = Camera.MAX_LOOK;
-			} else if (lookY < -Camera.MAX_LOOK) {
-				lookY = -Camera.MAX_LOOK;
-			}
-
 			if (shooting) {
-				if (facingRight) {
-					dx -= gun.getRecoil();
+				Direction direction;
+				if (up) {
+					direction = Direction.UP;
+				} else if (down && falling) {
+					direction = Direction.DOWN;
 				} else {
-					dx += gun.getRecoil();
+					if (facingRight) {
+						direction = Direction.RIGHT;
+						dx -= gun.getRecoil();
+					} else {
+						direction = Direction.LEFT;
+						dx += gun.getRecoil();
+					}
 				}
 				gun.shoot(direction, x, y);
 			}
@@ -329,6 +325,37 @@ public class Player extends Entity {
 		}
 	}
 
+	private void getNextCameraPosition() {
+		if (up) {
+			cameraY -= Camera.SPEED;
+		} else if (down && falling || inspecting) {
+			cameraY += Camera.SPEED;
+		} else {
+			if (facingRight) {
+				cameraX += Camera.SPEED;
+			} else {
+				cameraX -= Camera.SPEED;
+			}
+
+			if (cameraY > Camera.OFFSET_Y) {
+				cameraY -= Camera.SPEED;
+			} else if (cameraY < Camera.OFFSET_Y) {
+				cameraY += Camera.SPEED;
+			}
+		}
+
+		if (cameraX > Camera.MAX_X) {
+			cameraX = Camera.MAX_X;
+		} else if (cameraX < Camera.MIN_X) {
+			cameraX = Camera.MIN_X;
+		}
+		if (cameraY > Camera.MAX_Y) {
+			cameraY = Camera.MAX_Y;
+		} else if (cameraY < Camera.MIN_Y) {
+			cameraY = Camera.MIN_Y;
+		}
+	}
+
 	public int getHealth() {
 		return health;
 	}
@@ -341,12 +368,12 @@ public class Player extends Entity {
 		return experience;
 	}
 
-	public double getLookX() {
-		return lookX;
+	public double getCameraX() {
+		return cameraX;
 	}
 
-	public double getLookY() {
-		return lookY;
+	public double getCameraY() {
+		return cameraY;
 	}
 
 	public Gun getGun() {

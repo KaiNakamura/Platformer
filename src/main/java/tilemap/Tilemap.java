@@ -14,8 +14,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class Tilemap {
-	private static final int NUM_ROWS_TO_DRAW = Constants.HEIGHT / Constants.TILE_SIZE + 2;
-	private static final int NUM_COLS_TO_DRAW = Constants.WIDTH / Constants.TILE_SIZE + 2;
+	private static final int NUM_ROWS_TO_DRAW =	Constants.HEIGHT /
+												Constants.TILE_SIZE + 2;
+	private static final int NUM_COLS_TO_DRAW =	Constants.WIDTH /
+												Constants.TILE_SIZE + 2;
 
 	private TileCode[][] map;
 	private Tileset tileset;
@@ -254,7 +256,9 @@ public class Tilemap {
 			if (row >= numRows) {
 				break;
 			}
-			for (int col = colOffset; col < colOffset + NUM_COLS_TO_DRAW; col++) {
+			for (
+				int col = colOffset; col < colOffset + NUM_COLS_TO_DRAW; col++
+			) {
 				if (col >= numCols) {
 					break;
 				}

@@ -17,6 +17,7 @@
 
 package main.java;
 
+import main.java.Constants.Key;
 import main.java.audio.AudioPlayer;
 import main.java.gamestate.*;
 import main.java.gamestate.GameStateType;
@@ -118,6 +119,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
 	private void update(double dt) {
 		gameState.update(dt);
 		audioPlayer.update();
+		resetKeys();
 	}
 
 	private void draw() {
@@ -148,12 +150,36 @@ public class Game extends JPanel implements Runnable, KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		gameState.keyPressed(e);
+		int code = e.getKeyCode();
+
+		for (Key key : Key.values()) {
+			if (key.equals(code)) {
+				if(!key.isDown()) {
+					key.setPressed(true);
+				}
+				key.setDown(true);
+			}
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		gameState.keyReleased(e);
+		int code = e.getKeyCode();
+
+		for (Key key : Key.values()) {
+			if (key.equals(code)) {
+				key.setReleased(true);
+				key.setDown(false);
+			}
+
+		}
+	}
+
+	public void resetKeys() {
+		for (Key key : Key.values()) {
+			key.setPressed(false);
+			key.setReleased(false);
+		}
 	}
 
 	public long getDelay() {

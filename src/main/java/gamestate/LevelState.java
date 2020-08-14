@@ -1,7 +1,6 @@
 package main.java.gamestate;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import main.java.Constants;
@@ -47,6 +46,8 @@ public class LevelState extends GameState {
 		for (Entity entity : entities) {
 			entity.init();
 		}
+
+		setTilemapPosition(false);
 	}
 
 	@Override
@@ -77,13 +78,7 @@ public class LevelState extends GameState {
 			}
 		}
 
-		tilemap.setPosition(
-			(int) (Constants.WIDTH / 2.0 - player.getX() - player.getLookX()),
-			(int) (Constants.HEIGHT / 2.0 - player.getY() - player.getLookY()),
-			true
-		);
-
-		resetKeys();
+		setTilemapPosition(true);
 	}
 
 	@Override
@@ -95,36 +90,15 @@ public class LevelState extends GameState {
 		tilemap.drawTiles(graphics);
 	}
 
-	private void resetKeys() {
-		for (Key key : Key.values()) {
-			key.setPressed(false);
-			key.setReleased(false);
-		}
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		int code = e.getKeyCode();
-
-		for (Key key : Key.values()) {
-			if (key.equals(code)) {
-				if(!key.isDown()) {
-					key.setPressed(true);
-				}
-				key.setDown(true);
-			}
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		int code = e.getKeyCode();
-
-		for (Key key : Key.values()) {
-			if (key.equals(code)) {
-				key.setReleased(true);
-				key.setDown(false);
-			}
-		}
+	private void setTilemapPosition(boolean smooth) {
+		tilemap.setPosition(
+			(int) (
+				Constants.WIDTH / 2.0 - player.getX() - player.getCameraX()
+			),
+			(int) (
+				Constants.HEIGHT / 2.0 - player.getY() - player.getCameraY()
+			),
+			smooth
+		);
 	}
 }

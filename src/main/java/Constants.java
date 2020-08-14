@@ -15,12 +15,30 @@ public class Constants {
 	public static class Camera {
 		public static final double FOLLOW = 0.1;
 		public static final double PARALLAX = 0.1;
-		public static final double LOOK_SPEED = 2.0;
-		public static final double MAX_LOOK = 32;
+		public static final double SPEED = 2.0;
+		public static final double OFFSET_X = 0;
+		public static final double OFFSET_Y = -16;
+		public static final double MIN_X = -32;
+		public static final double MAX_X = 32;
+		public static final double MIN_Y = -48;
+		public static final double MAX_Y = 16;
 	}
 
 	public enum Direction {
-		RIGHT, LEFT, UP, DOWN
+		UP, RIGHT, DOWN, LEFT;
+
+		public static Direction getOppositeDirection(Direction direction) {
+			switch (direction) {
+				case UP:
+					return DOWN;
+				case RIGHT:
+					return LEFT;
+				case DOWN:
+					return UP;
+				default:
+					return RIGHT;
+			}
+		}
 	}
 
 	public enum File
