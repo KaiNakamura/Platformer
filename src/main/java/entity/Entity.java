@@ -286,6 +286,10 @@ public abstract class Entity {
 		this.landing = landing;
 	}
 
+	public void setShouldRemove(boolean shouldRemove) {
+		this.shouldRemove = shouldRemove;
+	}
+
 	public void setTilemap(Tilemap tilemap) {
 		this.tilemap = tilemap;
 	}

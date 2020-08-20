@@ -15,8 +15,8 @@ public class Enemy extends Entity {
 	private static final int WIDTH = 10;
 	private static final int HEIGHT = 11;
 
-	private static final double MOVE_SPEED = 0.5;
-	private static final double MAX_MOVE_SPEED = 2.5;
+	private static final double MOVE_SPEED = 0.25;
+	private static final double MAX_MOVE_SPEED = 1.0;
 	private static final double STOP_SPEED = 0.1;
 	private static final double GROUND_STOP_SPEED = 0.2;
 

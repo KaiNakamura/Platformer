@@ -79,13 +79,4 @@ public enum TerrainType {
 			", rightEdge: " + rightEdge
 		);
 	}
-
-	@Override
-	public String toString() {
-		return  super.toString() +
-				", topEdge: " + topEdge +
-				", bottomEdge: " + bottomEdge +
-				", leftEdge: " + leftEdge +
-				", rightEdge: " + rightEdge;
-	}
 }

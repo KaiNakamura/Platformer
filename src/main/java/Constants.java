@@ -64,12 +64,22 @@ public class Constants {
 		EXPERIENCE_AUDIO("audio/experience.wav"),
 		MUSIC("audio/music.wav"),
 
-		CORRIDOR_1("maps/corridor1.csv"),
-		DROP_1("maps/drop1.csv"),
-		LANDING_1("maps/landing1.csv"),
-		ENTRANCE_1("maps/entrance1.csv"),
-		EXIT_1("maps/exit1.csv"),
-		OTHER_1("maps/other1.csv");
+		ALL_WALLS_1("maps/allwalls1.csv"),
+		NO_WALLS_1("maps/nowalls1.csv"),
+		TOP_1("maps/top1.csv"),
+		RIGHT_1("maps/right1.csv"),
+		BOTTOM_1("maps/bottom1.csv"),
+		LEFT_1("maps/left1.csv"),
+		TOP_LEFT_1("maps/topleft1.csv"),
+		TOP_RIGHT_1("maps/topright1.csv"),
+		BOTTOM_RIGHT_1("maps/bottomright1.csv"),
+		BOTTOM_LEFT_1("maps/bottomleft1.csv"),
+		NO_BOTTOM_1("maps/nobottom1.csv"),
+		NO_LEFT_1("maps/noleft1.csv"),
+		NO_TOP_1("maps/notop1.csv"),
+		NO_RIGHT_1("maps/noright1.csv"),
+		TOP_BOTTOM_1("maps/topbottom1.csv"),
+		LEFT_RIGHT_1("maps/leftright1.csv");
 
 		private String path;
 		private java.io.File file;
@@ -81,7 +91,8 @@ public class Constants {
 					getClass().getClassLoader().getResource(this.path).toURI()
 				);
 			} catch(Exception e) {
-				e.printStackTrace();	
+				System.out.println("File not found with path: " + path);
+				e.printStackTrace();
 			}
 		}
 

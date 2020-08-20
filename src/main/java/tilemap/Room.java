@@ -1,46 +1,115 @@
 package main.java.tilemap;
 
-import main.java.Constants.File;
+import main.java.Constants.Direction;
 
-import java.util.ArrayList;
+public class Room {
+	private int row, col;
+	private boolean topWall, bottomWall, leftWall, rightWall;
 
-public enum Room {
-	CORRIDOR_1(File.CORRIDOR_1, RoomType.CORRIDOR),
-	DROP_1(File.DROP_1, RoomType.DROP),
-	LANDING_1(File.LANDING_1, RoomType.LANDING),
-	ENTRANCE_1(File.ENTRANCE_1, RoomType.ENTRANCE),
-	EXIT_1(File.EXIT_1, RoomType.EXIT),
-	OTHER_1(File.OTHER_1, RoomType.OTHER);
-	
-	private TileCode[][] map;
-	private RoomType roomType;
-
-	Room(TileCode[][] map, RoomType roomType) {
-		this.map = map;
-		this.roomType = roomType;
+	public Room(
+		int row,
+		int col,
+		boolean topWall,
+		boolean bottomWall,
+		boolean leftWall,
+		boolean rightWall
+	) {
+		this.row = row;
+		this.col = col;
+		this.topWall = topWall;
+		this.bottomWall = bottomWall;
+		this.leftWall = leftWall;
+		this.rightWall = rightWall;
 	}
 
-	Room(File mapFile, RoomType roomType) {
-		this(Tilemap.loadMap(mapFile), roomType);
+	public Room(int row, int col) {
+		this(row, col, true, true, true, true);
 	}
 
 	public TileCode[][] getMap() {
-		return map;
+		return Tilemap.loadMap(getRoomType().getRandomFile());
 	}
 	
 	public RoomType getRoomType() {
-		return roomType;
+		return RoomType.getRoomType(
+			topWall,
+			bottomWall,
+			leftWall,
+			rightWall
+		);
 	}
 
-	public static Room getRoom(RoomType roomType) {
-		ArrayList<Room> rooms = new ArrayList<>();
+	public int getRow() {
+		return row;
+	}
 
-		for (Room room : values()) {
-			if (room.getRoomType() == roomType) {
-				rooms.add(room);
-			}
+	public int getCol() {
+		return col;
+	}
+
+	public boolean hasTopWall() {
+		return topWall;
+	}
+
+	public boolean hasBottomWall() {
+		return bottomWall;
+	}
+
+	public boolean hasLeftWall() {
+		return leftWall;
+	}
+
+	public boolean hasRightWall() {
+		return rightWall;
+	}
+
+	public void setTopWall(boolean topWall) {
+		this.topWall = topWall;
+	}
+
+	public void setBottomWall(boolean bottomWall) {
+		this.bottomWall = bottomWall;
+	}
+
+	public void setLeftWall(boolean leftWall) {
+		this.leftWall = leftWall;
+	}
+
+	public void setRightWall(boolean rightWall) {
+		this.rightWall = rightWall;
+	}
+
+	public boolean hasWall(Direction direction) {
+		switch (direction) {
+			case UP:
+				return topWall;
+			case DOWN:
+				return bottomWall;
+			case LEFT:
+				return leftWall;
+			default:
+				return rightWall;
 		}
+	}
 
-		return rooms.get((int) (Math.random() * rooms.size()));
+	public void setWall(Direction direction, boolean state) {
+		switch (direction) {
+			case UP:
+				setTopWall(state);
+				break;
+			case DOWN:
+				setBottomWall(state);
+				break;
+			case LEFT:
+				setLeftWall(state);
+				break;
+			case RIGHT:
+				setRightWall(state);
+				break;
+		}
+	}
+
+	public boolean hasAllWalls() {
+		return topWall && bottomWall && leftWall && rightWall;
 	}
 }

@@ -1,17 +1,42 @@
 package main.java.tilemap;
 
+import java.util.ArrayList;
+
+import main.java.Constants;
+import main.java.Constants.Direction;
+import main.java.entity.Door;
+import main.java.entity.Enemy;
+import main.java.entity.Entity;
+import main.java.entity.Player;
+
 public class Level extends Tilemap {
-	private static final int ROOMS_ACROSS = 4;
-	private static final int ROOMS_DOWN = 4;
+	private static final int ROOMS_ACROSS = 6;
+	private static final int ROOMS_DOWN = 3;
 	private static final int ROOM_WIDTH = 20;
 	private static final int ROOM_HEIGHT = 15;
-	private static final int TILES_ACROSS = ROOMS_ACROSS * ROOM_WIDTH + 2;
-	private static final int TILES_DOWN = ROOMS_DOWN * ROOM_HEIGHT + 2;
-
-	private static final double DROP_CHANCE = 0.2;
+	private static final int TILES_ACROSS = ROOMS_ACROSS * ROOM_WIDTH;
+	private static final int TILES_DOWN = ROOMS_DOWN * ROOM_HEIGHT;
+	private static final double MIN_START_ENEMY_DISTANCE = 64;
 
 	public Level(Tileset tileset, Background background) {
 		super(Level.generateMap(), tileset, background);
+
+		player = new Player(this);
+		setRandomPosition(player, 0, ROOM_HEIGHT, 0, TILES_ACROSS);
+		
+		Door door = new Door(this);
+		doors.add(door);
+		setRandomPosition(door, TILES_DOWN - ROOM_HEIGHT, TILES_DOWN, 0, TILES_ACROSS);
+		
+		for (int i = 0; i < enemies.size(); i++) {
+			Enemy enemy = enemies.get(i);
+			double dx = enemy.getX() - player.getX();
+			double dy = enemy.getY() - player.getY();
+			double distance = Math.sqrt(dx * dx + dy * dy);
+			if (distance < MIN_START_ENEMY_DISTANCE) {
+				enemies.remove(i);
+			}
+		}
 	}		
 
 	private static TileCode[][] generateMap() {
@@ -22,15 +47,15 @@ public class Level extends Tilemap {
 			}
 		}
 
-		RoomType[][] roomTypes = generateRoomTypes();
+		Room[][] rooms = generateRooms();
 		
 		for (int i = 0; i < ROOMS_DOWN; i++) {
 			for (int j = 0; j < ROOMS_ACROSS; j++) {
 				map = addRoom(
 					map,
-					Room.getRoom(roomTypes[i][j]).getMap(),
-					i * ROOM_HEIGHT + 1,
-					j * ROOM_WIDTH + 1
+					rooms[i][j].getMap(),
+					i * ROOM_HEIGHT,
+					j * ROOM_WIDTH
 				);
 			}
 		}
@@ -38,52 +63,95 @@ public class Level extends Tilemap {
 		return map;
 	}
 
-	private static RoomType[][] generateRoomTypes() {
-		RoomType[][] roomTypes = new RoomType[ROOMS_DOWN][ROOMS_ACROSS];
+	private static Room[][] generateRooms() {
+		Room[][] rooms = new Room[ROOMS_DOWN][ROOMS_ACROSS];
 		for (int i = 0; i < ROOMS_DOWN; i++) {
 			for (int j = 0; j < ROOMS_ACROSS; j++) {
-				roomTypes[i][j] = RoomType.OTHER;
+				rooms[i][j] = new Room(i, j);
 			}
 		}
 
-		int row = 0;
-		int col = (int) (Math.random() * ROOMS_ACROSS);
-		int direction = 0;
-		roomTypes[row][col] = RoomType.ENTRANCE;
+		Room room = rooms[ROOMS_DOWN - 1][(int) (Math.random() * ROOMS_ACROSS)];
+		ArrayList<Room> generationPath = new ArrayList<>();
 
-		while (row < ROOMS_DOWN) {
-			if (direction == 0) {
-				if (col == ROOMS_ACROSS - 1) {
-					direction = -1;
-				} else if (col == 0) {
-					direction = 1;
-				} else {
-					direction = Math.random() > 0.5 ? 1 : -1;
+		while (true) {
+			// Get available directions
+			ArrayList<Direction> availableDirections = new ArrayList<>();
+
+			int i = 0;
+			while (true) {
+				// If room up exists and has all walls, add up
+				if (
+					room.getRow() > 0 &&
+					rooms[room.getRow() - 1][room.getCol()].hasAllWalls()
+				) {
+					availableDirections.add(Direction.UP);
 				}
-			}
+				// If room down exists and has all walls, add down
+				if (
+					room.getRow() < ROOMS_DOWN - 1 &&
+					rooms[room.getRow() + 1][room.getCol()].hasAllWalls()
+				) {
+					availableDirections.add(Direction.DOWN);
+				}
+				// If room left exists and has all walls, add left
+				if (
+					room.getCol() > 0 &&
+					rooms[room.getRow()][room.getCol() - 1].hasAllWalls()
+				) {
+					availableDirections.add(Direction.LEFT);
+				}
+				// If room right exists and has all walls, add right
+				if (
+					room.getCol() < ROOMS_ACROSS - 1 &&
+					rooms[room.getRow()][room.getCol() + 1].hasAllWalls()
+				) {
+					availableDirections.add(Direction.RIGHT);
+				}
 
-			if (
-				((Math.random() < DROP_CHANCE) ||
-				(direction == 1 && col == ROOMS_ACROSS - 1) ||
-				(direction == -1 && col == 0)) &&
-				(roomTypes[row][col] != RoomType.ENTRANCE)
-			) {
-				roomTypes[row][col] = RoomType.DROP;
-				direction = 0;
-				if (row >= ROOMS_DOWN - 1) {
-					roomTypes[row][col] = RoomType.EXIT;
+				// If no available directions, check previous rooms
+				if (availableDirections.isEmpty()) {
+					// If no previous room, generation complete
+					if (i >= generationPath.size()) {
+						return rooms;
+					}
+					room = generationPath.get(i);
+					i++;
+				} else {
 					break;
-				} else {
-					row++;
-					roomTypes[row][col] = RoomType.LANDING;
 				}
-			} else {
-				col += direction;
-				roomTypes[row][col] = RoomType.CORRIDOR;
 			}
-		}
 
-		return roomTypes;
+			// Pick new room in random direction
+			Direction randomDirection = availableDirections.get(
+				(int) (Math.random() * availableDirections.size())
+			);
+
+			Room randomRoom;
+			switch (randomDirection) {
+				case UP:
+					randomRoom = rooms[room.getRow() - 1][room.getCol()];
+					break;
+				case DOWN:
+					randomRoom = rooms[room.getRow() + 1][room.getCol()];
+					break;
+				case LEFT:
+					randomRoom = rooms[room.getRow()][room.getCol() - 1];
+					break;
+				default:
+					randomRoom = rooms[room.getRow()][room.getCol() + 1];
+					break;
+			}
+
+			// Remove walls between current room and new room
+			room.setWall(randomDirection, false);
+			randomRoom.setWall(
+				Direction.getOppositeDirection(randomDirection), false
+			);
+
+			room = randomRoom;
+			generationPath.add(0, room);
+		}
 	}
 
 	private static TileCode[][] addRoom(
@@ -99,5 +167,39 @@ public class Level extends Tilemap {
 		}
 
 		return map;
+	}
+
+	private void setRandomPosition(
+		Entity entity,
+		int rowMin,
+		int rowMax,
+		int colMin,
+		int colMax
+	) {
+		ArrayList<double[]> positions = new ArrayList<>();
+
+		for (int row = rowMin; row < rowMax; row++) {
+			for (int col = colMin; col < colMax; col++) {
+				// If tile is air and tile below is terrain, add position
+				if (
+					map[row][col].getTileType() == TileType.AIR &&
+					row < TILES_DOWN - 1 &&
+					map[row + 1][col].getTileType() == TileType.TERRAIN
+				) {
+					double x = 	(col * Constants.TILE_SIZE) +
+								(Constants.TILE_SIZE / 2.0);
+					double y = 	(row * Constants.TILE_SIZE) +
+								(Constants.TILE_SIZE / 2.0);
+					positions.add(new double[]{x, y});
+				}
+			}
+		}
+		
+		if(!positions.isEmpty()) {
+			double[] randomPosition = positions.get(
+				(int) (Math.random() * positions.size())
+			);
+			entity.setPosition(randomPosition[0], randomPosition[1]);
+		}
 	}
 }

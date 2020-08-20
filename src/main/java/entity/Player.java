@@ -28,7 +28,7 @@ public class Player extends Entity {
 	private static final double JUMP_FALL_SPEED = 0.25;
 	private static final double MAX_FALL_SPEED = 4.0;
 
-	private static final int HEALTH = 1000;
+	private static final int HEALTH = 5;
 	private static final double INVINCIBILITY_TIME = 1000;
 
 	private int health, maxHealth;

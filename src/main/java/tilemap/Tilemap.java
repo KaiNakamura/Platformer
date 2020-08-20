@@ -19,21 +19,21 @@ public class Tilemap {
 	private static final int NUM_COLS_TO_DRAW =	Constants.WIDTH /
 												Constants.TILE_SIZE + 2;
 
-	private TileCode[][] map;
-	private Tileset tileset;
-	private Background background;
-	private Tile[][] tiles;
+	protected TileCode[][] map;
+	protected Tileset tileset;
+	protected Background background;
+	protected Tile[][] tiles;
 	
-	private double x, y;
-	private int width, height;
-	private int xMin, yMin, xMax, yMax;
+	protected double x, y;
+	protected int width, height;
+	protected int xMin, yMin, xMax, yMax;
 
-	private int numRows, numCols;
-	private int rowOffset, colOffset;
+	protected int numRows, numCols;
+	protected int rowOffset, colOffset;
 
-	private Player player;
-	private ArrayList<Enemy> enemies;
-	private ArrayList<Door> doors;
+	protected Player player;
+	protected ArrayList<Enemy> enemies;
+	protected ArrayList<Door> doors;
 
 	protected Tilemap(
 		TileCode[][] map,
@@ -135,7 +135,9 @@ public class Tilemap {
 				line = bufferedReader.readLine();
 				String[] tokens = line.split(delims);
 				for (int col = 0; col < numCols; col++) {
-					map[row][col] = TileCode.getTileCode(tokens[col].charAt(0));
+					map[row][col] = TileCode.getTileCode(tokens[col].charAt(
+						(int) (Math.random() * tokens[col].length())
+					));
 				}
 			}
 		} catch (Exception e) {

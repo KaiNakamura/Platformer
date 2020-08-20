@@ -3,17 +3,19 @@
 // Hitbox class?
 // dt
 // Pausing
-// Experience orbs
 // Enemy superclass
 // Gui
 // Winning
 // Restart prompt
 // Remove xMap and yMap from Entity
 // More enemies
-// Depth first search map generation
 // Smoke particles
 // Refactor some speeds to accelerations
 // Experience pitch up
+// Randomized tiles
+// Don't spawn enemies on player
+// Obstacle blocks?
+// Tiles missing some pixels
 
 package main.java;
 
