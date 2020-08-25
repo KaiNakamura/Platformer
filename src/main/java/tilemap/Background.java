@@ -9,92 +9,111 @@ import java.awt.image.BufferedImage;
 
 public class Background
 {
-    private BufferedImage image;
+	public enum BackgroundType {
+		IMAGE, COLOR;
+	}
 
-    private double x;
-    private double y;
-    private double dx;
-    private double dy;
+	private BackgroundType backgroundType;
+	private BufferedImage image;
+	private Color color;
 
-    private double parallaxScale;
+	private double x;
+	private double y;
+	private double dx;
+	private double dy;
 
-    public Background(File file, double parallaxScale) {
-        try {
+	private double parallaxScale;
+
+	public Background(File file, double parallaxScale) {
+		try {
+			backgroundType = BackgroundType.IMAGE;
 			image = ImageIO.read(file.getFile());
-            this.parallaxScale = parallaxScale;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+			this.parallaxScale = parallaxScale;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public Background(File file) {
 		this(file, 0);
 	}
 
-    public void update(double dt) {
-        x += dx;
-        y += dy;
-    }
+	public Background(Color color) {
+		backgroundType = BackgroundType.COLOR;
+		this.color = color;
+	}
 
-    public void draw(Graphics2D graphics) {
-        graphics.drawImage(image, (int) x, (int) y, null);
+	public void update(double dt) {
+		x += dx;
+		y += dy;
+	}
 
-        // Tile wrapping
-        if (x < 0) {
-            graphics.drawImage(image, (int) x + Constants.WIDTH, (int) y, null);
-        }
-        if (x > 0) {
-            graphics.drawImage(image, (int) x - Constants.WIDTH, (int) y, null);
-        }
-        if (y < 0) {
-            graphics.drawImage(image, (int) x, (int) y + Constants.HEIGHT, null);
-        }
-        if (y > 0) {
-            graphics.drawImage(image, (int) x, (int) y - Constants.HEIGHT, null);
-        }
-    }
+	public void draw(Graphics2D graphics) {
+		switch (backgroundType) {
+			case IMAGE:
+				graphics.drawImage(image, (int) x, (int) y, null);
 
-    public double getX() {
-        return x;
-    }
+				// Tile wrapping
+				if (x < 0) {
+					graphics.drawImage(image, (int) x + Constants.WIDTH, (int) y, null);
+				}
+				if (x > 0) {
+					graphics.drawImage(image, (int) x - Constants.WIDTH, (int) y, null);
+				}
+				if (y < 0) {
+					graphics.drawImage(image, (int) x, (int) y + Constants.HEIGHT, null);
+				}
+				if (y > 0) {
+					graphics.drawImage(image, (int) x, (int) y - Constants.HEIGHT, null);
+				}
+				break;
+			case COLOR:
+				graphics.setColor(color);
+				graphics.fillRect(0, 0, Constants.WIDTH, Constants.HEIGHT);
+				break;
+		}
+	}
 
-    public double getY() {
-        return y;
-    }
+	public double getX() {
+		return x;
+	}
 
-    public double getDx() {
-        return dx;
-    }
+	public double getY() {
+		return y;
+	}
 
-    public double getDy() {
-        return dy;
-    }
+	public double getDx() {
+		return dx;
+	}
 
-    public void setX(double x) {
-        this.x = (x * parallaxScale) % Constants.WIDTH;
-    }
+	public double getDy() {
+		return dy;
+	}
 
-    public void setY(double y) {
-        this.y = (y * parallaxScale) % Constants.HEIGHT;
-    }
+	public void setX(double x) {
+		this.x = (x * parallaxScale) % Constants.WIDTH;
+	}
 
-    public void setPosition(double x, double y) {
-        setX(x);
-        setY(y);
-    }
+	public void setY(double y) {
+		this.y = (y * parallaxScale) % Constants.HEIGHT;
+	}
 
-    public void setDx(double dx) {
-        this.dx = dx;
-    }
+	public void setPosition(double x, double y) {
+		setX(x);
+		setY(y);
+	}
 
-    public void setDy(double dy) {
-        this.dy = dy;
-    }
+	public void setDx(double dx) {
+		this.dx = dx;
+	}
 
-    public void setVelocity(double dx, double dy) {
-        setDx(dx);
-        setDy(dy);
-    }
+	public void setDy(double dy) {
+		this.dy = dy;
+	}
+
+	public void setVelocity(double dx, double dy) {
+		setDx(dx);
+		setDy(dy);
+	}
 }
-

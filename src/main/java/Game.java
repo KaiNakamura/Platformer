@@ -2,7 +2,6 @@
 // Entity refactor
 // Hitbox class?
 // dt
-// Pausing
 // Enemy superclass
 // Gui
 // Winning
@@ -16,6 +15,8 @@
 // Don't spawn enemies on player
 // Obstacle blocks?
 // Tiles missing some pixels
+// Remove hold to jump and add coyote time
+// Better game states
 
 package main.java;
 
@@ -82,7 +83,8 @@ public class Game extends JPanel implements Runnable, KeyListener {
 
 		gameStates = new GameState[] {
 			new MenuState(),
-			new LevelState()
+			new LevelState(),
+			new PauseState()
 		};
 		gameState = gameStates[0];
 	}
@@ -207,6 +209,18 @@ public class Game extends JPanel implements Runnable, KeyListener {
 			if (gameState.getGameStateType() == gameStateType) {
 				this.gameState = gameState;
 				return;
+			}
+		}
+
+		throw new IllegalArgumentException(
+			"GameState not found of GameStateType " + gameStateType
+		);
+	}
+
+	public GameState getGameState(GameStateType gameStateType) {
+		for (GameState gameState : gameStates) {
+			if (gameState.getGameStateType() == gameStateType) {
+				return gameState;
 			}
 		}
 

@@ -33,7 +33,9 @@ public class LevelState extends GameState {
 
 	@Override
 	public void init() {
-		tilemap = new Level(new Tileset(File.TILESET), new Background(File.BACKGROUND));
+		tilemap = new Level(
+			new Tileset(File.TILESET), new Background(File.BACKGROUND)
+		);
 
 		entities = new ArrayList<>();
 		player = tilemap.getPlayer();
@@ -52,15 +54,9 @@ public class LevelState extends GameState {
 
 	@Override
 	public void update(double dt) {
-		player.setLeft(Key.LEFT.isDown());
-		player.setRight(Key.RIGHT.isDown());
-		player.setUp(Key.UP.isDown());
-		player.setDown(Key.DOWN.isDown());
-		player.setJumping(Key.JUMP.isDown());
-		player.setShooting(Key.SHOOT.isPressed());
-
-		if (Key.DOWN.isPressed()) {
-			player.setInspecting(true);
+		if (Key.PAUSE.isPressed()) {
+			game.getAudioPlayer().stop(File.MUSIC);
+			game.setGameState(GameStateType.PAUSE);
 		}
 
 		for (int i = 0; i < entities.size(); i++) {

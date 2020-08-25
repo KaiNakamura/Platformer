@@ -3,6 +3,7 @@ package main.java.entity;
 import main.java.Constants.Camera;
 import main.java.Constants.Direction;
 import main.java.Constants.File;
+import main.java.Constants.Key;
 import main.java.Game;
 import main.java.audio.Audio;
 import main.java.entity.guns.Gun;
@@ -256,6 +257,17 @@ public class Player extends Entity {
 	}
 
 	private void getNextPosition() {
+		left = Key.LEFT.isDown();
+		right = Key.RIGHT.isDown();
+		up = Key.UP.isDown();
+		down = Key.DOWN.isDown();
+		jumping = Key.JUMP.isDown();
+		shooting = Key.SHOOT.isPressed();
+
+		if (Key.DOWN.isPressed()) {
+			inspecting = true;
+		}
+
 		// Movement
 		if (left && !right) {
 			dx -= MOVE_SPEED;

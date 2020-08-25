@@ -26,7 +26,13 @@ public class Level extends Tilemap {
 		
 		Door door = new Door(this);
 		doors.add(door);
-		setRandomPosition(door, TILES_DOWN - ROOM_HEIGHT, TILES_DOWN, 0, TILES_ACROSS);
+		setRandomPosition(
+			door,
+			TILES_DOWN - ROOM_HEIGHT,
+			TILES_DOWN,
+			0,
+			TILES_ACROSS
+		);
 		
 		for (int i = 0; i < enemies.size(); i++) {
 			Enemy enemy = enemies.get(i);
@@ -71,7 +77,10 @@ public class Level extends Tilemap {
 			}
 		}
 
-		Room room = rooms[ROOMS_DOWN - 1][(int) (Math.random() * ROOMS_ACROSS)];
+		int randomRow = (int) (Math.random() * ROOMS_DOWN);
+		int randomCol = (int) (Math.random() * ROOMS_ACROSS);
+		Room room = rooms[randomRow][randomCol];
+
 		ArrayList<Room> generationPath = new ArrayList<>();
 
 		while (true) {
