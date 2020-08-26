@@ -117,10 +117,8 @@ public class Enemy extends Entity {
 	@Override
 	public void draw(Graphics2D graphics) {
 		if (!dead) {
-			setMapPosition();
-
-			int drawX = (int) (x + xMap - animation.getWidth() / 2.0);
-			int drawY = (int) (y + yMap - animation.getWidth() / 2.0);
+			int drawX = (int) (x + tilemap.getX() - animation.getWidth() / 2.0);
+			int drawY = (int) (y + tilemap.getY() - animation.getWidth() / 2.0);
 			
 			if (facingRight) {
 				graphics.drawImage(

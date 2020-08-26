@@ -11,7 +11,6 @@ public abstract class Entity {
 	protected Game game;
 
 	protected Tilemap tilemap;
-	protected double xMap, yMap;
 
 	protected double x, y, dx, dy;
 	protected int width, height;
@@ -106,10 +105,8 @@ public abstract class Entity {
 	}
 
 	public void draw(Graphics2D graphics) {
-		setMapPosition();
-
-		int drawX = (int) (x + xMap - animation.getWidth() / 2.0);
-		int drawY = (int) (y + yMap - animation.getWidth() / 2.0);
+		int drawX = (int) (x + tilemap.getX() - animation.getWidth() / 2.0);
+		int drawY = (int) (y + tilemap.getY() - animation.getWidth() / 2.0);
 
 		graphics.drawImage(
 			animation.getImage(),
@@ -138,8 +135,8 @@ public abstract class Entity {
 	}
 
 	public boolean isOnScreen() {
-		double xFinal = x + xMap;
-		double yFinal = y + yMap;
+		double xFinal = x + tilemap.getX();
+		double yFinal = y + tilemap.getY();
 
 		return !(	xFinal + animation.getWidth() < 0 ||
 					xFinal - animation.getWidth() > Constants.WIDTH ||
@@ -292,11 +289,6 @@ public abstract class Entity {
 
 	public void setTilemap(Tilemap tilemap) {
 		this.tilemap = tilemap;
-	}
-
-	public void setMapPosition() {
-		xMap = tilemap.getX();
-		yMap = tilemap.getY();
 	}
 
 	public void setAnimation(Animation animation) {

@@ -221,8 +221,6 @@ public class Player extends Entity {
 	@Override
 	public void draw(Graphics2D graphics) {
 		if (!dead) {
-			setMapPosition();
-
 			if (hurt) {
 				long elapsed = (System.nanoTime() - hurtTimer) / 1000000;
 				if (elapsed / 100 % 2 == 0) {
@@ -230,8 +228,8 @@ public class Player extends Entity {
 				}
 			}
 
-			int drawX = (int) (x + xMap - animation.getWidth() / 2.0);
-			int drawY = (int) (y + yMap - animation.getWidth() / 2.0);
+			int drawX = (int) (x + tilemap.getX() - animation.getWidth() / 2.0);
+			int drawY = (int) (y + tilemap.getY() - animation.getWidth() / 2.0);
 
 			if (facingRight) {
 				graphics.drawImage(

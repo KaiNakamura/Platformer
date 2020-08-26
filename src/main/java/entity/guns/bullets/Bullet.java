@@ -44,10 +44,8 @@ public abstract class Bullet extends Entity {
 
 	@Override
 	public void draw(Graphics2D graphics) {
-		setMapPosition();
-
-		int drawX = (int) (x + xMap - animation.getWidth() / 2.0);
-		int drawY = (int) (y + yMap - animation.getWidth() / 2.0);
+		int drawX = (int) (x + tilemap.getX() - animation.getWidth() / 2.0);
+		int drawY = (int) (y + tilemap.getY() - animation.getWidth() / 2.0);
 
 		switch (direction) {
 			case RIGHT:
