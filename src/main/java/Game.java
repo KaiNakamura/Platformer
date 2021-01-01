@@ -17,13 +17,15 @@
 // Tiles missing some pixels
 // Remove hold to jump and add coyote time
 // Better game states
+// Game state choices
+// Clear key inputs before level starts so player doesn't jump
+// Shots aren't fun to line up (hitting platforms)
 
 package main.java;
 
 import main.java.Constants.Key;
 import main.java.audio.AudioPlayer;
 import main.java.gamestate.*;
-import main.java.gamestate.GameStateType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -84,7 +86,8 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		gameStates = new GameState[] {
 			new MenuState(),
 			new LevelState(),
-			new PauseState()
+			new PauseState(),
+			new DeathState()
 		};
 		gameState = gameStates[0];
 	}

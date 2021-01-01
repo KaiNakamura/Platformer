@@ -131,7 +131,7 @@ public class Player extends Entity {
 								new Audio(File.PLAYER_DIE_AUDIO)
 							);
 							game.getAudioPlayer().stop(File.MUSIC);
-							game.setScreenShake(16, 100);
+							game.setScreenShake(8, 300);
 							game.delay(30);
 							for (int i = 0; i < 20; i++) {
 								Blood blood = new Blood(tilemap, x, y, dx, dy);

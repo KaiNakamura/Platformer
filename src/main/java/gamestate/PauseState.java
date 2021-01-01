@@ -30,7 +30,7 @@ public class PauseState extends GameState {
 			background.setVelocity(-0.1, 0);
 
 			color = new Color(128, 0, 0);
-			font = new Font("Arial", Font.PLAIN, 24);
+			font = new Font("Arial", Font.PLAIN, 48);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -39,7 +39,7 @@ public class PauseState extends GameState {
 
 	@Override
 	public void update(double dt) {
-		if (Key.PAUSE.isPressed()) {
+		if (Key.ESC.isPressed()) {
 			game.getAudioPlayer().play(new Audio(File.MUSIC));
 			game.setGameState(GameStateType.LEVEL);
 		}

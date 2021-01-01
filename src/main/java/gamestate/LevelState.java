@@ -16,11 +16,15 @@ import main.java.tilemap.Tilemap;
 import main.java.tilemap.Tileset;
 
 public class LevelState extends GameState {
+	private static final double DEATH_TIME = 2000;
+
 	private Tilemap tilemap;
 	
 	private ArrayList<Entity> entities;
 	private Player player;
 	private ArrayList<Door> doors;
+
+	private long deathTimer;
 
 	protected LevelState(Game game) {
 		super(game, GameStateType.LEVEL);
@@ -54,9 +58,18 @@ public class LevelState extends GameState {
 
 	@Override
 	public void update(double dt) {
-		if (Key.PAUSE.isPressed()) {
+		if (Key.ESC.isPressed()) {
 			game.getAudioPlayer().stop(File.MUSIC);
 			game.setGameState(GameStateType.PAUSE);
+		}
+
+		if (player.isDead()) {
+			long elapsed = (System.nanoTime() - deathTimer) / 1000000;
+			if (elapsed > DEATH_TIME) {
+				game.setGameState(GameStateType.DEATH);
+			}
+		} else {
+			deathTimer = System.nanoTime();
 		}
 
 		for (int i = 0; i < entities.size(); i++) {

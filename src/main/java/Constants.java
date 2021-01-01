@@ -112,7 +112,7 @@ public class Constants {
 		DOWN(KeyEvent.VK_DOWN, KeyEvent.VK_S),
 		JUMP(KeyEvent.VK_Z, KeyEvent.VK_SPACE),
 		SHOOT(KeyEvent.VK_X),
-		PAUSE(KeyEvent.VK_ESCAPE);
+		ESC(KeyEvent.VK_ESCAPE);
 
 		private int[] codes;
 		private boolean pressed, lastPressed;

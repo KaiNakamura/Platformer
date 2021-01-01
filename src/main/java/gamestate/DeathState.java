@@ -9,12 +9,12 @@ import main.java.tilemap.Background;
 
 import java.awt.*;
 
-public class MenuState extends GameState {
-	public enum MenuChoice {
-		NEW("New"), LOAD("Load"), QUIT("Quit");
+public class DeathState extends GameState {
+	public enum DeathChoice {
+		RETRY("Retry?"), QUIT("Quit");
 
 		private String s;
-		MenuChoice(String s) {
+		DeathChoice(String s) {
 			this.s = s;
 		}
 
@@ -26,21 +26,21 @@ public class MenuState extends GameState {
 	private Background background;
 	private Color titleColor, selectedColor, color;
 	private Font titleFont, font;
-	private MenuChoice menuChoice;
+	private DeathChoice deathChoice;
 
-	protected MenuState(Game game) {
-		super(game, GameStateType.MENU);
+	protected DeathState(Game game) {
+		super(game, GameStateType.DEATH);
 		init();
 	}
 
-	public MenuState() {
+	public DeathState() {
 		this(Game.getInstance());
 	}
 
 	@Override
 	public void init() {
 		try {
-			background = new Background(File.BACKGROUND, 1);
+			background = new Background(new Color(0, 0, 0, 128));
 			background.setVelocity(-0.1, 0);
 
 			titleColor = new Color(128, 0, 0);
@@ -49,8 +49,8 @@ public class MenuState extends GameState {
 			selectedColor = Color.WHITE;
 			color = Color.RED;
 			font = new Font("Arial", Font.PLAIN, 12);
-
-			menuChoice = MenuChoice.NEW;
+			
+			deathChoice = DeathChoice.RETRY;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -72,6 +72,9 @@ public class MenuState extends GameState {
 
 	@Override
 	public void draw(Graphics2D graphics) {
+		// Draw game
+		game.getGameState(GameStateType.LEVEL).draw(graphics);
+
 		// Draw background
 		background.draw(graphics);
 
@@ -80,26 +83,26 @@ public class MenuState extends GameState {
 		graphics.setFont(titleFont);
 		drawCenteredString(
 			graphics,
-			"Game",
+			"You Died",
 			titleFont,
 			new Rectangle(0, 0, Constants.WIDTH, Constants.HEIGHT / 2)
 		);
 
-		// Draw menu choices
+		// Draw choices
 		graphics.setFont(font);
-		for (MenuChoice menuChoice : MenuChoice.values()) {
-			if (this.menuChoice == menuChoice) {
+		for (DeathChoice deathChoice : DeathChoice.values()) {
+			if (this.deathChoice == deathChoice) {
 				graphics.setColor(selectedColor);
 			} else {
 				graphics.setColor(color);
 			}
 			drawCenteredString(
 				graphics,
-				menuChoice.toString(),
+				deathChoice.toString(),
 				font,
 				new Rectangle(
 					0,
-					menuChoice.ordinal() * 15,
+					deathChoice.ordinal() * 15,
 					Constants.WIDTH,
 					Constants.HEIGHT
 				)
@@ -128,30 +131,28 @@ public class MenuState extends GameState {
 	}
 
 	public void select() {
-		switch (menuChoice) {
-			case NEW:
+		switch (deathChoice) {
+			case RETRY:
 				game.setGameState(GameStateType.LEVEL);
 				game.getGameState().init();
 				game.getAudioPlayer().play(new Audio(File.MUSIC, true));
 				break;
-			case LOAD:
-				break;
 			case QUIT:
-				System.exit(0);
+				game.setGameState(GameStateType.MENU);
 		}
 	}
 
 	public void moveChoice(int dir) {
-		int newOrdinal =	(menuChoice.ordinal() - dir) %
-							MenuChoice.values().length;
+		int newOrdinal =	(deathChoice.ordinal() - dir) %
+							DeathChoice.values().length;
 
 		if (newOrdinal == -1) {
-			newOrdinal = MenuChoice.values().length - 1;
+			newOrdinal = DeathChoice.values().length - 1;
 		}
 
-		for (MenuChoice menuChoice : MenuChoice.values()) {
-			if (menuChoice.ordinal() == newOrdinal) {
-				this.menuChoice = menuChoice;
+		for (DeathChoice deathChoice : DeathChoice.values()) {
+			if (deathChoice.ordinal() == newOrdinal) {
+				this.deathChoice = deathChoice;
 			}
 		}
 	}
